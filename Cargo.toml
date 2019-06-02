@@ -1,0 +1,26 @@
+[package]
+name = "mohan"
+version = "0.0.1"
+authors = ["hello@organism.org"]
+description = "Shared Types & Utils"
+license = "Apache-2.0"
+edition = "2018"
+
+
+
+[dependencies]
+serde = "1"
+parking_lot = {version = "0.7", features = ["deadlock_detection"]}
+bincode = { version = "1.*", features = ["i128"] }
+blake2b_simd = "0.5"
+
+# Builtin Types
+fixed-hash = { version = "0.3", default-features = true }
+uint = { version = "0.6", default-features = true }
+
+# Reexports
+merlin = "1.1.0"
+bech32 = "0.6"
+
+[dev-dependencies]
+serde_json = "1.0"
