@@ -52,7 +52,6 @@ impl Debug for SymmetricKey {
 }
 
 
-
 impl SymmetricKey {
 
     /// Convert this Symmetric key to a byte array.
