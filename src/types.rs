@@ -138,17 +138,7 @@ impl_uint_conversions!(H512, U512);
 impl_uint_serde!(U512, 8);
 impl_fixed_hash_serde!(H512, 64);
 
-impl From<U256> for u64 {
-    fn from(value: U256) -> u64 {
-        value.as_u64()
-    }
-}
 
-impl From<U256> for u32 {
-    fn from(value: U256) -> u32 {
-        value.as_u32()
-    }
-}
 
 impl From<u64> for H256 {
     fn from(val: u64) -> Self {

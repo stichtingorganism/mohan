@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[macro_use]
-extern crate uint;
-#[macro_use]
-extern crate fixed_hash;
-
-#[cfg(test)]
-extern crate serde_json;
-
+#[macro_use] extern crate uint;
+#[macro_use] extern crate fixed_hash;
+#[cfg(test)] extern crate serde_json;
 
 /// Fixed Integers & Hash
 pub mod types;
@@ -37,3 +32,9 @@ pub mod hex;
 pub mod hash;
 /// Repub Blak2b
 pub use blake2b_simd as blake2b;
+/// Authenticated Symmetric Encryption Capsule
+pub mod secretbox;
+/// 64bit Time handling
+pub use tai64;
+/// Repub Zeroize 
+pub use zeroize;
