@@ -27,7 +27,7 @@ uint = { git = "https://github.com/paritytech/parity-common", version = "0.8", d
 # Reexports
 merlin = "1.1.0"
 bech32 = "0.6"
-
+bytes = "0.4.12"
 
 
 [dev-dependencies]
