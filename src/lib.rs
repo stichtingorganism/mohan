@@ -36,7 +36,5 @@ pub use blake2b_simd as blake2b;
 pub mod secretbox;
 /// 64bit Time handling
 pub use tai64;
-/// Repub Zeroize 
-#[macro_use(Zeroize)] pub use zeroize;
 /// Repub Bytes
 pub use bytes;
