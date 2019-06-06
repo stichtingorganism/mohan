@@ -38,3 +38,5 @@ pub mod secretbox;
 pub use tai64;
 /// Repub Zeroize 
 pub use zeroize;
+/// Repub Bytes
+pub use bytes;
