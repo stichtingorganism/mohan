@@ -234,7 +234,6 @@ impl<'d> Deserialize<'d> for NonceKey {
 ///  o  Arbitrary length additional authenticated data (AAD)
 ///
 /// A Box encapsulates the cipher text and associated nonce value, it is ok to be public 
-
 #[derive(Eq, PartialEq, Serialize, Deserialize)]
 pub struct SecretBox {
     /// Unique nonce of the data

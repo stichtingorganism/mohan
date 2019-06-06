@@ -37,6 +37,6 @@ pub mod secretbox;
 /// 64bit Time handling
 pub use tai64;
 /// Repub Zeroize 
-pub use zeroize;
+#[macro_use(Zeroize)] pub use zeroize;
 /// Repub Bytes
 pub use bytes;
