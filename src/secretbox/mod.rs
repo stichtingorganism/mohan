@@ -234,9 +234,8 @@ impl<'d> Deserialize<'d> for NonceKey {
 ///  o  Arbitrary length additional authenticated data (AAD)
 ///
 /// A Box encapsulates the cipher text and associated nonce value, it is ok to be public 
-#[allow(non_snake_case)]
-// #[derive(Eq, PartialEq, Serialize, Deserialize)]
-#[repr(C)]
+
+#[derive(Eq, PartialEq, Serialize, Deserialize)]
 pub struct SecretBox {
     /// Unique nonce of the data
     pub nonce: NonceKey,
@@ -255,42 +254,6 @@ impl Debug for SecretBox {
 
 
 impl SecretBox {
-
-    // /// Convert this `Box` to a byte array.
-    // #[inline]
-    // pub fn to_bytes(&self) -> Vec<u8> {
-    //     //Our nonce is fixed but cipher text can be arbitary
-    //     let mut box_bytes = Vec::new();
-
-    //     //first is nonce which is known to be fixed
-    //     box_bytes.
-
-    //     signature_bytes[..32].copy_from_slice(&self.R.as_bytes()[..]);
-    //     signature_bytes[32..].copy_from_slice(&self.s.as_bytes()[..]);
-
-    //     //return 
-    //     box_bytes
-    // }
-
-    // /// Construct a `Box` from a slice of bytes.
-    // #[inline]
-    // pub fn from_bytes(bytes: &[u8]) -> Result<Signature, SecretBoxError> {
-    //     if bytes.len() != SIGNATURE_LENGTH {
-    //         return Err(SecretBoxError(InternalError::BytesLengthError{
-    //             name: "Signature", length: SIGNATURE_LENGTH }));
-    //     }
-    //     let mut lower: [u8; 32] = [0u8; 32];
-    //     let mut upper: [u8; 32] = [0u8; 32];
-
-    //     lower.copy_from_slice(&bytes[..32]);
-    //     upper.copy_from_slice(&bytes[32..]);
-
-    //     if upper[31] & 224 != 0 {
-    //         return Err(SecretBoxError(InternalError::ScalarFormatError));
-    //     }
-
-    //     Ok(Signature{ R: CompressedRistretto(lower), s: Scalar::from_bits(upper) })
-    // }
 
     //takes a plaintext message and returns an box object that holds cipher text and nonce
     pub fn lock(key: &SymmetricKey, nonce: NonceKey, message: &[u8], aad: &[u8]) -> Result<SecretBox, SecretBoxError> { 
@@ -320,32 +283,6 @@ impl SecretBox {
         
     }
 }
-
-// impl Serialize for Box {
-//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
-//         serializer.serialize_bytes(&self.to_bytes()[..])
-//     }
-// }
-
-
-// impl<'d> Deserialize<'d> for Box {
-//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where D: Deserializer<'d> {
-//         struct BoxVisitor;
-
-//         impl<'d> Visitor<'d> for BoxVisitor {
-//             type Value = Box;
-
-//             fn expecting(&self, formatter: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-//                 formatter.write_str("An encapsualted Box as bytes.")
-//             }
-
-//             fn visit_bytes<E>(self, bytes: &[u8]) -> Result<Box, E> where E: SerdeError{
-//                 Box::from_bytes(bytes).or(Err(SerdeError::invalid_length(bytes.len(), &self)))
-//             }
-//         }
-//         deserializer.deserialize_bytes(BoxVisitor)
-//     }
-// }
 
 
 
@@ -389,20 +326,31 @@ mod tests {
     
     }
 
-    // #[test]
-    // fn test_seal_open_tamper(){
-    //     for i in 0..256usize {
-    //         let key = key();
-    //         let message = shared::random_data_test_helper(i);
-    //         let mut boxy = key.lock(&message);
-    //         for i in 0..boxy.cipher.len() {
-    //             boxy.cipher[i] ^= 0x20;
-    //             let plaintext = boxy.unlock(&key);
-    //             assert!(Err(()) == plaintext);
-    //             boxy.cipher[i] ^= 0x20;
-    //         }
-    //     }
-    // }
+    #[test]
+    fn test_seal_open_tamper(){
+        // for i in 0..256usize {
+            let key = SymmetricKey([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+                17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]);
+
+            let nonce = NonceKey([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+
+            let aad = [1, 2, 3, 4];
+
+            let plaintext = b"hello, world";
+
+            let mut boxy = SecretBox::lock(&key, nonce, plaintext, &aad).unwrap();
+
+            for i in 0..boxy.cipher.len() {
+                //modify some bytes 
+                boxy.cipher[i] ^= 0x20;
+                
+                let recovred = boxy.unlock(&key, &aad);
+
+                assert!(Err(SecretBoxError(InternalError::DecryptingError)) == recovred);
+                boxy.cipher[i] ^= 0x20;
+            }
+        // }
+    }
 
 
 }
