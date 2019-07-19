@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
@@ -17,15 +17,13 @@ rand = "0.6"
 tai64 = "2"
 
 # Builtin Types
-fixed-hash = { version = "0.3", default-features = true }
+fixed-hash = { version = "0.4", default-features = false, features = ["byteorder", "rustc-hex"] }
 uint = { version = "0.8", default-features = true }
 
 # Reexports
 bech32 = "0.7"
 bytes = "0.4.12"
 byteorder = "1"
-
-
 
 
 [dev-dependencies]

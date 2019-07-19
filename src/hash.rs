@@ -18,6 +18,8 @@ use blake2b_simd::{
     Params
 };
 
+/// Repub Blak2b
+pub use blake2b_simd as blake2b;
 
 /// Blake256 hashes data without key at 32 bytes blake2b
 pub fn blake256(data: &[u8]) -> H256 {
