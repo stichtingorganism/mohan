@@ -14,10 +14,21 @@
 
 //Taken from Parity libs & changed as needed
 
+construct_fixed_hash! { 
+    /// Fixed-size uninterpreted hash type with 16 bytes (128 bits) size.
+    pub struct H128(16); 
+}
+
+construct_fixed_hash! {
+	/// Fixed-size uninterpreted hash type with 20 bytes (160 bits) size.
+	pub struct H160(20);
+}
+
 construct_fixed_hash! {
     /// Fixed-size uninterpreted hash type with 32 bytes (256 bits) size.
     pub struct H256(32);
 }
+
 construct_uint! {
     /// 256-bit unsigned integer.
     pub struct U256(4);
@@ -127,6 +138,9 @@ macro_rules! impl_uint_conversions {
         }
     };
 }
+
+impl_fixed_hash_serde!(H128, 16);
+impl_fixed_hash_serde!(H160, 20);
 
 impl_uint_conversions!(H256, U256);
 impl_uint_serde!(U256, 4);

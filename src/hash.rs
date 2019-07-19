@@ -13,8 +13,11 @@
 // limitations under the License.
 
 //! Hash Functions
-use crate::types::{H256, H384, H512};
-use blake2b_simd::Params;
+use crate::types::{H128, H256, H384, H512};
+use blake2b_simd::{
+    Params
+};
+
 
 /// Blake256 hashes data without key at 32 bytes blake2b
 pub fn blake256(data: &[u8]) -> H256 {
@@ -31,4 +34,28 @@ pub fn blake512(data: &[u8]) -> H512 {
     H512::from_slice(Params::new().hash_length(64).hash(data).as_bytes())
 }
 
+/// Blake2b based Message Authentication Code @ 16 bytes
+pub fn hmac_128(info: &[u8], salt: &[u8], key: &[u8]) -> H128 {
+  let mut params = Params::new();
+  params.personal(info);
+  params.salt(salt);
+  params.key(key);
+  params.hash_length(16);
+
+  // Use those params to hash an input all at once.
+  H128::from_slice(params.hash(b"euka").as_bytes())
+}
+
+
+/// Blake2b based Message Authentication Code @ 32 bytes
+pub fn hmac_256(info: &[u8], salt: &[u8], key: &[u8]) -> H256 {
+  let mut params = Params::new();
+  params.personal(info);
+  params.salt(salt);
+  params.key(key);
+  params.hash_length(32);
+
+  // Use those params to hash an input all at once.
+  H256::from_slice(params.hash(b"euka").as_bytes())
+}
 

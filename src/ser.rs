@@ -32,6 +32,15 @@ use serde::{de, Deserializer, Serializer};
 use std::error;
 use std::fmt;
 
+
+/// Trait for types that serialize to a known fixed length.
+pub trait FixedLength {
+	/// The length in bytes
+	const LEN: usize;
+}
+
+
+
 /// Serialisation error.
 #[derive(Debug)]
 pub enum SerialisationError {
