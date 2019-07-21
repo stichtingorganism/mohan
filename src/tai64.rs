@@ -24,7 +24,7 @@ const TAI64N_LEN: usize = 12;
 const NANOS_PER_SECOND: u32 = 1_000_000_000;
 
 /// A `TAI64` label.
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Serialize, Deserialize, Default)]
 pub struct TAI64(pub u64);
 
 impl TAI64 {
