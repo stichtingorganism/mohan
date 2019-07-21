@@ -31,7 +31,7 @@ pub mod hex;
 /// Various Sized Blake2b hash functions
 pub mod hash;
 /// 64bit Time handling
-pub use tai64;
+pub mod tai64;
 /// Repub Bytes
 pub use bytes;
 /// Repub Byteorder

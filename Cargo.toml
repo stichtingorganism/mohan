@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.5"
+version = "0.0.6"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
@@ -14,7 +14,6 @@ bincode = { version = "1.*", features = ["i128"] }
 blake2b_simd = "0.5"
 failure = "0.1"
 rand = "0.6"
-tai64 = "2"
 
 # Builtin Types
 fixed-hash = { version = "0.4", default-features = false, features = ["byteorder", "rustc-hex"] }
@@ -28,3 +27,5 @@ byteorder = "1"
 
 [dev-dependencies]
 serde_json = "1.0"
+quickcheck = "0.8"
+chrono = { version = "0.4", default-features = false }
