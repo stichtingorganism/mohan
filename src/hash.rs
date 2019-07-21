@@ -36,6 +36,13 @@ pub fn blake512(data: &[u8]) -> H512 {
     H512::from_slice(Params::new().hash_length(64).hash(data).as_bytes())
 }
 
+
+/// Paranoid Hash: blakeblake256 
+/// blake256(blake256(blake384(blake384(data)))) 
+pub fn blakeblake256(data: &[u8]) -> H256 {
+  blake256(blake256(blake384(blake384(data).as_bytes()).as_bytes()).as_bytes())
+}
+
 /// Blake2b based Message Authentication Code @ 16 bytes
 pub fn hmac_128(info: &[u8], salt: &[u8], key: &[u8]) -> H128 {
   let mut params = Params::new();
