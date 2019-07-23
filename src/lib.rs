@@ -21,7 +21,7 @@
 /// Fixed Integers & Hash
 pub mod types;
 /// Repub bech32
-pub use bech32;
+pub mod bech32;
 /// Serilization
 pub mod ser;
 /// Parking Lot backed Sync Primitives

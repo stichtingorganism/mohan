@@ -1,0 +1,1 @@
+Taken from https://github.com/rust-bitcoin/rust-bech32/tree/master/fuzz
