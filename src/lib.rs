@@ -24,6 +24,8 @@ pub mod types;
 pub mod bech32;
 /// Serilization
 pub mod ser;
+/// Serde Support
+pub mod mserde;
 /// Parking Lot backed Sync Primitives
 pub mod sync;
 /// To & From Hex
@@ -36,4 +38,6 @@ pub mod tai64;
 pub use bytes;
 /// Repub Byteorder
 pub use byteorder;
+/// Repub Schnorr
+pub use schnorr;
 

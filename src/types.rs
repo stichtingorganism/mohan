@@ -39,15 +39,6 @@ construct_fixed_hash! {
     pub struct H384(48);
 }
 
-construct_fixed_hash! {
-    /// Fixed-size uninterpreted hash type with 64 bytes (512 bits) size.
-    pub struct H512(64);
-}
-
-construct_uint! {
-    /// 512-bits unsigned integer.
-    pub struct U512(8);
-}
 
 /// Add Serde serialization support to an integer created by `construct_uint!`.
 #[macro_export]
@@ -60,7 +51,7 @@ macro_rules! impl_uint_serde {
             {
                 let mut bytes = [0u8; $len * 8];
                 self.to_big_endian(&mut bytes);
-                $crate::ser::serialize_uint(&bytes, serializer)
+                $crate::mserde::serialize_uint(&bytes, serializer)
             }
         }
 
@@ -69,9 +60,9 @@ macro_rules! impl_uint_serde {
             where
                 D: serde::Deserializer<'de>,
             {
-                $crate::ser::deserialize_check_len(
+                $crate::mserde::deserialize_check_len(
                     deserializer,
-                    $crate::ser::ExpectedLen::Between(0, $len * 8),
+                    $crate::mserde::ExpectedLen::Between(0, $len * 8),
                 )
                 .map(|x| (&*x).into())
             }
@@ -88,7 +79,7 @@ macro_rules! impl_fixed_hash_serde {
             where
                 S: serde::Serializer,
             {
-                $crate::ser::serialize(&self.0, serializer)
+                $crate::mserde::serialize(&self.0, serializer)
             }
         }
 
@@ -97,15 +88,64 @@ macro_rules! impl_fixed_hash_serde {
             where
                 D: serde::Deserializer<'de>,
             {
-                $crate::ser::deserialize_check_len(
+                $crate::mserde::deserialize_check_len(
                     deserializer,
-                    $crate::ser::ExpectedLen::Exact($len),
+                    $crate::mserde::ExpectedLen::Exact($len),
                 )
                 .map(|x| $name::from_slice(&x))
             }
         }
     };
 }
+
+/// Add Mohan serialization support to a fixed-sized hash type created by `construct_fixed_hash!`.
+#[macro_export]
+macro_rules! impl_fixed_hash_mohan_ser {
+    ($name: ident, $len: expr) => {
+
+        impl crate::ser::Readable for $name {
+            fn read(reader: &mut dyn crate::ser::Reader) -> Result<Self, crate::ser::Error> {
+                let v = reader.read_fixed_bytes($len)?;
+                let mut a = [0; $len];
+                a.copy_from_slice(&v[..]);
+                Ok($name(a))
+            }
+        }
+
+        impl crate::ser::Writeable for $name {
+            fn write<W: crate::ser::Writer>(&self, writer: &mut W) -> Result<(), crate::ser::Error> {
+                writer.write_fixed_bytes(&self.0)
+            }
+        }
+    };
+}
+
+
+
+/// Add Mohan serialization support to a fixed-sized Uint type created by `construct_uint!`.
+#[macro_export]
+macro_rules! impl_uint_mohan_ser {
+    ($name: ident, $len: expr) => {
+
+        impl crate::ser::Readable for $name {
+            fn read(reader: &mut dyn crate::ser::Reader) -> Result<Self, crate::ser::Error> {
+                let v = reader.read_fixed_bytes($len * 8)?;
+                Ok($name::from_big_endian(&v))
+            }
+        }
+
+        impl crate::ser::Writeable for $name {
+            fn write<W: crate::ser::Writer>(&self, writer: &mut W) -> Result<(), crate::ser::Error> {
+                let mut bytes = [0u8; $len * 8];
+                self.to_big_endian(&mut bytes);
+
+                writer.write_fixed_bytes(&bytes)
+            }
+        }
+    };
+}
+
+
 
 macro_rules! impl_uint_conversions {
     ($hash: ident, $uint: ident) => {
@@ -139,19 +179,25 @@ macro_rules! impl_uint_conversions {
     };
 }
 
+
+//
+// Serde Encoding
+//
 impl_fixed_hash_serde!(H128, 16);
 impl_fixed_hash_serde!(H160, 20);
+impl_fixed_hash_serde!(H256, 32);
+impl_fixed_hash_serde!(H384, 48);
+impl_uint_serde!(U256, 4);
+
+//
+// Raw Byte Big Endian Encoding
+//
+impl_fixed_hash_mohan_ser!(H128, 16);
+impl_fixed_hash_mohan_ser!(H160, 20);
+impl_fixed_hash_mohan_ser!(H256, 32);
+impl_uint_mohan_ser!(U256, 4);
 
 impl_uint_conversions!(H256, U256);
-impl_uint_serde!(U256, 4);
-impl_fixed_hash_serde!(H256, 32);
-
-impl_fixed_hash_serde!(H384, 48);
-
-impl_uint_conversions!(H512, U512);
-impl_uint_serde!(U512, 8);
-impl_fixed_hash_serde!(H512, 64);
-
 
 
 impl From<u64> for H256 {
@@ -162,15 +208,8 @@ impl From<u64> for H256 {
 
 #[cfg(test)]
 mod tests {
-    use super::H256;
+    use super::{H256, H160};
     use serde_json as ser;
-
-    construct_fixed_hash! {
-        /// Fixed-size uninterpreted hash type with 20 bytes (160 bits) size.
-        pub struct H160(20);
-    }
-
-    impl_fixed_hash_serde!(H160, 20);
 
     impl From<u64> for H160 {
         fn from(val: u64) -> Self {

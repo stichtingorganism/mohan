@@ -1,4 +1,7 @@
+#![no_main]
 extern crate mohan;
+#[macro_use]
+extern crate libfuzzer_sys;
 
 use mohan::bech32;
 use std::str::FromStr;
@@ -14,14 +17,6 @@ fn do_test(data: &[u8]) {
     assert_eq!(bech32::encode(&b32.0, b32.1).unwrap(), data_str);
 }
 
-#[cfg(feature = "afl")]
-extern crate afl;
-#[cfg(feature = "afl")]
-fn main() {
-    afl::read_stdio_bytes(|data| {
-        do_test(&data);
-    });
-}
 
 #[cfg(feature = "honggfuzz")]
 #[macro_use] extern crate honggfuzz;

@@ -266,6 +266,24 @@ pub enum Error {
     NanosInvalid,
 }
 
+//
+// Encoding Support
+//
+
+impl crate::ser::Readable for TAI64 {
+	fn read(reader: &mut dyn crate::ser::Reader) -> Result<TAI64, crate::ser::Error> {
+		let time = reader.read_u64()?;
+		Ok(TAI64(time))
+	}
+}
+
+impl crate::ser::Writeable for TAI64 {
+	fn write<W: crate::ser::Writer>(&self, writer: &mut W) -> Result<(), crate::ser::Error> {
+		writer.write_u64(self.0)
+	}
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;

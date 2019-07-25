@@ -13,13 +13,18 @@
 // limitations under the License.
 
 //! Hash Functions
-use crate::types::{H128, H256, H384, H512};
+use crate::types::{H160, H128, H256, H384};
 use blake2b_simd::{
     Params
 };
 
 /// Repub Blak2b
 pub use blake2b_simd as blake2b;
+
+/// Blake160 hashes data without key at 20 bytes blake2b
+pub fn blake160(data: &[u8]) -> H160 {
+    H160::from_slice(Params::new().hash_length(32).hash(data).as_bytes())
+}
 
 /// Blake256 hashes data without key at 32 bytes blake2b
 pub fn blake256(data: &[u8]) -> H256 {
@@ -29,11 +34,6 @@ pub fn blake256(data: &[u8]) -> H256 {
 /// Blake384 hashes data without key at 48 bytes blake2b
 pub fn blake384(data: &[u8]) -> H384 {
     H384::from_slice(Params::new().hash_length(48).hash(data).as_bytes())
-}
-
-/// Blake512 hashes data without key at 64 bytes blake2b
-pub fn blake512(data: &[u8]) -> H512 {
-    H512::from_slice(Params::new().hash_length(64).hash(data).as_bytes())
 }
 
 
@@ -68,3 +68,12 @@ pub fn hmac_256(info: &[u8], salt: &[u8], key: &[u8]) -> H256 {
   H256::from_slice(params.hash(b"euka").as_bytes())
 }
 
+//
+// Copyright 2018 The Grin Developers
+//
+
+/// A trait for types that have a canonical hash
+pub trait Hashed {
+	/// Obtain the hash of the object at 256bits
+	fn hash(&self) -> H256;
+}

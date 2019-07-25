@@ -7,13 +7,15 @@ publish = false
 [package.metadata]
 cargo-fuzz = true
 
+[dependencies.libfuzzer-sys]
+git = "https://github.com/rust-fuzz/libfuzzer-sys.git"
+
+
 [features]
 afl_fuzz = ["afl"]
 honggfuzz_fuzz = ["honggfuzz"]
 
 [dependencies]
-honggfuzz = { version = "0.5", optional = true }
-afl = { version = "0.3", optional = true }
 libc = "0.2"
 mohan = { path = ".." }
 
