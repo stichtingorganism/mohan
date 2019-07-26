@@ -21,7 +21,7 @@ use std::fmt::Write;
 use std::num;
 
 /// Encode the provided bytes into a hex string
-pub fn to_hex(bytes: &[u8]) -> Option<String> {
+pub fn to_hex(bytes: &[u8]) -> String {
     let mut s = String::new();
     for byte in bytes {
         write!(&mut s, "{:02x}", byte).expect("Unable to write");
