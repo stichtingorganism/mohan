@@ -27,7 +27,7 @@ pub fn to_hex(bytes: &[u8]) -> String {
         write!(&mut s, "{:02x}", byte).expect("Unable to write");
     }
 
-    Some(s)
+    s
 }
 
 /// Decode a hex string into bytes.
@@ -62,9 +62,9 @@ mod test {
 
     #[test]
     fn test_to_hex() {
-        assert_eq!(to_hex(&[0, 0, 0, 0]).unwrap(), "00000000");
-        assert_eq!(to_hex(&[10, 11, 12, 13]).unwrap(), "0a0b0c0d");
-        assert_eq!(to_hex(&[0, 0, 0, 255]).unwrap(), "000000ff");
+        assert_eq!(to_hex(&[0, 0, 0, 0]), "00000000");
+        assert_eq!(to_hex(&[10, 11, 12, 13]), "0a0b0c0d");
+        assert_eq!(to_hex(&[0, 0, 0, 255]), "000000ff");
     }
 
     #[test]

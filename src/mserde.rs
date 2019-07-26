@@ -42,7 +42,7 @@ pub fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
-    let hex: String = crate::hex::to_hex(bytes).unwrap();
+    let hex: String = crate::hex::to_hex(bytes);
     serializer.serialize_str(&format!("0x{}", hex))
 }
 
@@ -60,7 +60,7 @@ where
         return serializer.serialize_str("0x0");
     }
 
-    let hex: String = crate::hex::to_hex(bytes).unwrap();
+    let hex: String = crate::hex::to_hex(bytes);
     let has_leading_zero = !hex.is_empty() && &hex[0..1] == "0";
 
     serializer.serialize_str(&format!(
