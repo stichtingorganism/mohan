@@ -16,6 +16,7 @@
 #[macro_use] extern crate uint;
 #[macro_use] extern crate fixed_hash;
 #[cfg(test)] extern crate serde_json;
+extern crate schnorr as schnorr_raw;
 
 
 /// Fixed Integers & Hash
@@ -38,6 +39,11 @@ pub mod tai64;
 pub use bytes;
 /// Repub Byteorder
 pub use byteorder;
-/// Repub Schnorr
-pub use schnorr;
 
+
+pub mod schnorr {
+    /// Repub Schnorr
+    pub use schnorr_raw::*;
+
+    //TODO: Implement Encoding 
+}
