@@ -67,7 +67,7 @@
 //!     use std::fmt;
 //!     use std::hash::Hasher;
 //!     use std::iter::FromIterator;
-//!     use mohan::types::H256;
+//!     use mohan::hash::H256;
 //!     use mohan::merkle::{Algorithm, Hashable};
 //!
 //!     pub struct ExampleAlgorithm(blake2b_simd::State);
@@ -99,7 +99,7 @@
 //!     impl Algorithm<H256> for ExampleAlgorithm {
 //!         #[inline]
 //!         fn hash(&mut self) -> H256 {
-//!             H256::from_slice(self.0.finalize().as_bytes())
+//!             H256::from_vec(self.0.finalize().as_bytes())
 //!         }
 //!
 //!         #[inline]
@@ -114,12 +114,12 @@
 //! fn main() {
 //!     use example::ExampleAlgorithm;
 //!     use mohan::merkle::{MerkleTree,VecStore};
-//!     use mohan::types::H256;
+//!     use mohan::hash::H256;
 //!     use std::iter::FromIterator;
 //!
 //!     let mut h1 = H256::zero();
-//!     let mut h2 = H256::from(2);
-//!     let mut h3 = H256::from(3);
+//!     let mut h2 = H256::from_vec(&vec![1u8, 1u8]);
+//!     let mut h3 = H256::from_vec(&vec![2u8, 2u8]);
 //!
 //!     let t: MerkleTree<H256, ExampleAlgorithm, VecStore<_>> = MerkleTree::from_iter(vec![h1, h2, h3]);
 //!     println!("{:?}", t.root());

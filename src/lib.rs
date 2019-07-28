@@ -13,14 +13,14 @@
 // limitations under the License.
 
 
-#[macro_use] extern crate uint;
-#[macro_use] extern crate fixed_hash;
-#[cfg(test)] extern crate serde_json;
+// #[macro_use] extern crate uint;
+// #[macro_use] extern crate fixed_hash;
+// #[cfg(test)] extern crate serde_json;
 extern crate schnorr as schnorr_raw;
 
 
-/// Fixed Integers & Hash
-pub mod types;
+// /// Fixed Integers & Hash
+// pub mod types;
 /// Repub bech32
 pub mod bech32;
 /// Serilization
