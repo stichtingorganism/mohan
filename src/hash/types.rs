@@ -247,3 +247,46 @@ impl<D: DefaultHashable> Hashed for D {
 impl DefaultHashable for Vec<u8> {}
 impl DefaultHashable for u64 {}
 
+impl std::str::FromStr for H256 {
+	type Err = ser::Error;
+
+	/// Creates a hash type instance from the given string.
+	fn from_str(
+		input: &str,
+	) -> Result<H256, ser::Error> {
+		Self::from_hex(input)
+	}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::H256;
+	use std::str::FromStr;
+
+	#[test]
+    fn test_serialize_h256_zero() {
+  		let rawzero = H256::zero();
+        let strzero = H256::from_str("0x0000000000000000000000000000000000000000000000000000000000000000").unwrap();
+
+		assert_eq!(rawzero, strzero);
+	}
+
+	#[test]
+    fn test_serialize_h256_two() {
+  		let rawzero = H256::from_vec(&vec![2]);
+		  println!("{:?}", rawzero.to_hex());
+        let strzero = H256::from_str("0x0200000000000000000000000000000000000000000000000000000000000000").unwrap();
+
+		assert_eq!(rawzero, strzero);
+	}
+
+	#[test]
+    fn test_serialize_h256_sixteen() {
+  		let rawzero = H256::from_vec(&vec![16]);
+        let strzero = H256::from_hex("0x1000000000000000000000000000000000000000000000000000000000000000").unwrap();
+
+		assert_eq!(rawzero, strzero);
+	}
+
+
+}
