@@ -74,6 +74,7 @@ pub fn hmac_256(info: &[u8], salt: &[u8], key: &[u8]) -> H256 {
 
 /// A trait for types that have a canonical hash
 pub trait Hashed {
+  
 	/// Obtain the hash of the object at 256bits
 	fn hash(&self) -> H256;
 }

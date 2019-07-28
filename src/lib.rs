@@ -39,7 +39,8 @@ pub mod tai64;
 pub use bytes;
 /// Repub Byteorder
 pub use byteorder;
-
+/// Merkle Tree
+pub mod merkle;
 
 pub mod schnorr {
     /// Repub Schnorr

@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.12"
+version = "0.0.13"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
@@ -13,6 +13,7 @@ parking_lot = {version = "0.7", features = ["deadlock_detection"]}
 blake2b_simd = "0.5"
 failure = "0.1"
 rand = "0.6"
+rayon = "1.1"
 
 # Builtin Types
 fixed-hash = { version = "0.4", default-features = false, features = ["byteorder", "rustc-hex"] }
