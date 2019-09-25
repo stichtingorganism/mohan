@@ -15,9 +15,8 @@
 
 //! Hash Functions
 
-
-/// Repub Blak2b
-pub use blake2b_simd as blake2b;
+mod sip;
+pub use sip::SipHasher24 as SipHasher;
 
 mod types;
 pub use types::{
@@ -27,51 +26,5 @@ pub use types::{
     DefaultHashable
 };
 
-// /// Blake160 hashes data without key at 20 bytes blake2b
-// pub fn blake160(data: &[u8]) -> H160 {
-//     H160::from_slice(Params::new().hash_length(32).hash(data).as_bytes())
-// }
-
-/// Blake256 hashes data without key at 32 bytes blake2b
-pub fn blake256(data: &[u8]) -> H256 {
-    H256::from_vec(blake2b::Params::new().hash_length(32).hash(data).as_bytes())
-}
-
-/// Paranoid Hash: b256q 
-/// blake256(blake256(blake384(blake384(data)))) 
-pub fn blake256q(data: &[u8]) -> H256 {
-    H256::from_vec(
-        blake256(
-            blake256(
-                blake2b::Params::new().hash_length(48).hash(
-                    blake2b::Params::new().hash_length(48).hash(data).as_bytes()
-                ).as_bytes()
-            ).as_bytes()
-        ).as_bytes()
-    )
-}
-
-// /// Blake2b based Message Authentication Code @ 16 bytes
-// pub fn hmac_128(info: &[u8], salt: &[u8], key: &[u8]) -> H128 {
-//   let mut params = Params::new();
-//   params.personal(info);
-//   params.salt(salt);
-//   params.key(key);
-//   params.hash_length(16);
-
-//   // Use those params to hash an input all at once.
-//   H128::from_slice(params.hash(b"euka").as_bytes())
-// }
 
 
-/// Blake2b based Message Authentication Code @ 32 bytes
-pub fn hmac_256(info: &[u8], salt: &[u8], key: &[u8]) -> H256 {
-  let mut params = blake2b::Params::new();
-  params.personal(info);
-  params.salt(salt);
-  params.key(key);
-  params.hash_length(32);
-
-  // Use those params to hash an input all at once.
-  H256::from_vec(params.hash(b"euka").as_bytes())
-}

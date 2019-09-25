@@ -21,14 +21,13 @@ use crate::ser::{
 	self, AsFixedBytes, FixedLength, ProtocolVersion, Readable, Reader, Writeable, Writer,
 };
 use crate::hex;
-use blake2b_simd as b2;
 use serde::{Deserialize, Serialize};
 
 
 /// A hash to uniquely (or close enough) identify one of the main blockchain
 /// constructs. Used pervasively for blocks, transactions and outputs.
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Serialize, Deserialize)]
-pub struct H256([u8; 32]);
+pub struct H256(pub(crate)[u8; 32]);
 
 impl DefaultHashable for H256 {}
 
@@ -83,6 +82,12 @@ impl H256 {
 		BigEndian::read_u64(&self.0)
 	}
 
+}
+
+impl From<[u8; 32]> for H256 {
+    fn from(data: [u8; 32]) -> Self {
+        H256(data)
+    }
 }
 
 impl fmt::Debug for H256 {
@@ -186,31 +191,35 @@ impl Default for H256 {
 	}
 }
 
+
 /// Serializer that outputs a hash of the serialized object
 pub struct HashWriter {
-	state: b2::State,
+	state: crate::blake2::State
 }
 
 impl HashWriter {
+
 	/// Consume the `HashWriter`, outputting its current hash into a 32-byte
 	/// array
-	pub fn finalize(self, output: &mut [u8]) {
-		output.copy_from_slice(self.state.finalize().as_bytes());
+	pub fn finalize(&mut self, output: &mut [u8]) {
+		output.copy_from_slice(self.state.finalize().as_bytes())
 	}
 
 	/// Consume the `HashWriter`, outputting a `Hash` corresponding to its
 	/// current state
-	pub fn into_hash(self) -> H256 {
-		let mut res = [0; 32];
-		res.copy_from_slice(self.state.finalize().as_bytes());
-		H256(res)
+	pub fn into_hash(&mut self) -> H256 {
+		H256::from_hex(self.state.finalize().to_hex().as_str()).unwrap()
 	}
 }
 
 impl Default for HashWriter {
 	fn default() -> HashWriter {
+		// Create a Params object with a secret key and a non-default length.
+		let mut params = crate::blake2::Params::new();
+		params.hash_length(32);
+
 		HashWriter {
-			state: b2::Params::new().hash_length(32).to_state()
+			state: params.to_state()
 		}
 	}
 }
@@ -274,7 +283,6 @@ mod tests {
 	#[test]
     fn test_serialize_h256_two() {
   		let rawzero = H256::from_vec(&vec![2]);
-		  println!("{:?}", rawzero.to_hex());
         let strzero = H256::from_str("0x0200000000000000000000000000000000000000000000000000000000000000").unwrap();
 
 		assert_eq!(rawzero, strzero);

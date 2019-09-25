@@ -19,3 +19,4 @@ pub use parking_lot::deadlock;
 pub use parking_lot::Condvar;
 pub use parking_lot::Mutex;
 pub use parking_lot::RwLock;
+pub use parking_lot::RwLockReadGuard;

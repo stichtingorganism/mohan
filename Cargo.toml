@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.15"
+version = "0.0.18"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
@@ -9,23 +9,18 @@ edition = "2018"
 
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
-parking_lot = {version = "0.7", features = ["deadlock_detection"]}
-blake2b_simd = "0.5"
+parking_lot = {version = "0.9", features = ["deadlock_detection"]}
 failure = "0.1"
 rand = "0.6"
-rayon = "1.1"
-
-# Builtin Types
-fixed-hash = { version = "0.4", default-features = false, features = ["byteorder", "rustc-hex"] }
-uint = { version = "0.8", default-features = true }
-
-# Reexports
-bytes = { version = "0.4.12", features = ["serde"] }
+zeroize = "0.9.3"
+rand_core = { version = "0.4", default-features = false }
 byteorder = "1"
-schnorr = "0.0.*"
+bytes = "0.4"
+curve25519-dalek = { version = "1.2", features = ["serde", "alloc"] }
+blake2b_simd = "0.5"
+
 
 [dev-dependencies]
-serde_json = "1.0"
 quickcheck = "0.8"
 chrono = { version = "0.4", default-features = false }
-bincode = { version = "1.*", features = ["i128"] }
+hex = "0.3"

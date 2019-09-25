@@ -20,9 +20,9 @@
 //! `serialize` or `deserialize` functions on them as appropriate.
 
 
-use crate::hash::Hashed;
+// use crate::hash::Hashed;
 use serde::{Deserialize, Serialize};
-use byteorder::{BigEndian, ByteOrder, ReadBytesExt};
+use byteorder::{LittleEndian, ByteOrder, ReadBytesExt};
 use std::fmt;
 use std::io::{self, Read, Write};
 use std::marker;
@@ -77,6 +77,9 @@ pub enum Error {
 	/// Block header version (hard-fork schedule).
 	#[fail(display = "invalid block version")]
 	InvalidBlockVersion,
+	/// Block header version (hard-fork schedule).
+	#[fail(display = "invalid variable integer encoding")]
+	InvalidVarInt,
 }
 
 impl From<io::Error> for Error {
@@ -113,35 +116,35 @@ pub trait Writer {
 	/// Writes a u16 as bytes
 	fn write_u16(&mut self, n: u16) -> Result<(), Error> {
 		let mut bytes = [0; 2];
-		BigEndian::write_u16(&mut bytes, n);
+		LittleEndian::write_u16(&mut bytes, n);
 		self.write_fixed_bytes(&bytes)
 	}
 
 	/// Writes a u32 as bytes
 	fn write_u32(&mut self, n: u32) -> Result<(), Error> {
 		let mut bytes = [0; 4];
-		BigEndian::write_u32(&mut bytes, n);
+		LittleEndian::write_u32(&mut bytes, n);
 		self.write_fixed_bytes(&bytes)
 	}
 
 	/// Writes a u32 as bytes
 	fn write_i32(&mut self, n: i32) -> Result<(), Error> {
 		let mut bytes = [0; 4];
-		BigEndian::write_i32(&mut bytes, n);
+		LittleEndian::write_i32(&mut bytes, n);
 		self.write_fixed_bytes(&bytes)
 	}
 
 	/// Writes a u64 as bytes
 	fn write_u64(&mut self, n: u64) -> Result<(), Error> {
 		let mut bytes = [0; 8];
-		BigEndian::write_u64(&mut bytes, n);
+		LittleEndian::write_u64(&mut bytes, n);
 		self.write_fixed_bytes(&bytes)
 	}
 
 	/// Writes a i64 as bytes
 	fn write_i64(&mut self, n: i64) -> Result<(), Error> {
 		let mut bytes = [0; 8];
-		BigEndian::write_i64(&mut bytes, n);
+		LittleEndian::write_i64(&mut bytes, n);
 		self.write_fixed_bytes(&bytes)
 	}
 
@@ -366,19 +369,19 @@ impl<'a> Reader for BinReader<'a> {
 		self.source.read_u8().map_err(map_io_err)
 	}
 	fn read_u16(&mut self) -> Result<u16, Error> {
-		self.source.read_u16::<BigEndian>().map_err(map_io_err)
+		self.source.read_u16::<LittleEndian>().map_err(map_io_err)
 	}
 	fn read_u32(&mut self) -> Result<u32, Error> {
-		self.source.read_u32::<BigEndian>().map_err(map_io_err)
+		self.source.read_u32::<LittleEndian>().map_err(map_io_err)
 	}
 	fn read_i32(&mut self) -> Result<i32, Error> {
-		self.source.read_i32::<BigEndian>().map_err(map_io_err)
+		self.source.read_i32::<LittleEndian>().map_err(map_io_err)
 	}
 	fn read_u64(&mut self) -> Result<u64, Error> {
-		self.source.read_u64::<BigEndian>().map_err(map_io_err)
+		self.source.read_u64::<LittleEndian>().map_err(map_io_err)
 	}
 	fn read_i64(&mut self) -> Result<i64, Error> {
-		self.source.read_i64::<BigEndian>().map_err(map_io_err)
+		self.source.read_i64::<LittleEndian>().map_err(map_io_err)
 	}
 	/// Read a variable size vector from the underlying Read. Expects a usize
 	fn read_bytes_len_prefix(&mut self) -> Result<Vec<u8>, Error> {
@@ -449,23 +452,23 @@ impl<'a> Reader for StreamingReader<'a> {
 	}
 	fn read_u16(&mut self) -> Result<u16, Error> {
 		let buf = self.read_fixed_bytes(2)?;
-		Ok(BigEndian::read_u16(&buf[..]))
+		Ok(LittleEndian::read_u16(&buf[..]))
 	}
 	fn read_u32(&mut self) -> Result<u32, Error> {
 		let buf = self.read_fixed_bytes(4)?;
-		Ok(BigEndian::read_u32(&buf[..]))
+		Ok(LittleEndian::read_u32(&buf[..]))
 	}
 	fn read_i32(&mut self) -> Result<i32, Error> {
 		let buf = self.read_fixed_bytes(4)?;
-		Ok(BigEndian::read_i32(&buf[..]))
+		Ok(LittleEndian::read_i32(&buf[..]))
 	}
 	fn read_u64(&mut self) -> Result<u64, Error> {
 		let buf = self.read_fixed_bytes(8)?;
-		Ok(BigEndian::read_u64(&buf[..]))
+		Ok(LittleEndian::read_u64(&buf[..]))
 	}
 	fn read_i64(&mut self) -> Result<i64, Error> {
 		let buf = self.read_fixed_bytes(8)?;
-		Ok(BigEndian::read_i64(&buf[..]))
+		Ok(LittleEndian::read_i64(&buf[..]))
 	}
 
 	/// Read a variable size vector from the underlying stream. Expects a usize
@@ -501,27 +504,27 @@ impl<'a> Reader for StreamingReader<'a> {
 }
 
 
-/// Collections of items must be sorted lexicographically and all unique.
-pub trait VerifySortedAndUnique<T> {
-	/// Verify a collection of items is sorted and all unique.
-	fn verify_sorted_and_unique(&self) -> Result<(), Error>;
-}
+// /// Collections of items must be sorted lexicographically and all unique.
+// pub trait VerifySortedAndUnique<T> {
+// 	/// Verify a collection of items is sorted and all unique.
+// 	fn verify_sorted_and_unique(&self) -> Result<(), Error>;
+// }
 
-impl<T: Hashed> VerifySortedAndUnique<T> for Vec<T> {
+// impl<T: Hashed> VerifySortedAndUnique<T> for Vec<T> {
 
-	fn verify_sorted_and_unique(&self) -> Result<(), Error> {
-		let hashes = self.iter().map(|item| item.hash()).collect::<Vec<_>>();
-		let pairs = hashes.windows(2);
-		for pair in pairs {
-			if pair[0] > pair[1] {
-				return Err(Error::SortError);
-			} else if pair[0] == pair[1] {
-				return Err(Error::DuplicateError);
-			}
-		}
-		Ok(())
-	}
-}
+// 	fn verify_sorted_and_unique(&self) -> Result<(), Error> {
+// 		let hashes = self.iter().map(|item| item.hash()).collect::<Vec<_>>();
+// 		let pairs = hashes.windows(2);
+// 		for pair in pairs {
+// 			if pair[0] > pair[1] {
+// 				return Err(Error::SortError);
+// 			} else if pair[0] == pair[1] {
+// 				return Err(Error::DuplicateError);
+// 			}
+// 		}
+// 		Ok(())
+// 	}
+// }
 
 /// Utility wrapper for an underlying byte Writer. Defines higher level methods
 /// to write numbers, byte vectors, hashes, etc.
@@ -676,6 +679,35 @@ impl Writeable for [u8; 4] {
 	}
 }
 
+impl Readable for curve25519_dalek::scalar::Scalar {
+	fn read(reader: &mut dyn Reader) -> Result<curve25519_dalek::scalar::Scalar, Error> {
+		let v = reader.read_fixed_bytes(32)?;
+		let mut a = [0; 32];
+		a.copy_from_slice(&v[..]);
+		Ok(curve25519_dalek::scalar::Scalar::from_bits(a))
+	}
+}
+
+impl Writeable for curve25519_dalek::scalar::Scalar {
+	fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
+		writer.write_fixed_bytes(self.as_bytes())
+	}
+}
+
+
+impl Readable for curve25519_dalek::ristretto::CompressedRistretto {
+	fn read(reader: &mut dyn Reader) -> Result<curve25519_dalek::ristretto::CompressedRistretto, Error> {
+		let v = reader.read_fixed_bytes(32)?;
+		Ok(curve25519_dalek::ristretto::CompressedRistretto::from_slice(&v[..]))
+	}
+}
+
+impl Writeable for curve25519_dalek::ristretto::CompressedRistretto {
+	fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
+		writer.write_fixed_bytes(self.as_bytes())
+	}
+}
+
 /// Trait for types that serialize to a known fixed length.
 pub trait FixedLength {
 	/// The length in bytes
@@ -747,6 +779,7 @@ impl AsFixedBytes for [u8; 32] {
 		32
 	}
 }
+
 
 
 impl AsFixedBytes for String {

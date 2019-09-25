@@ -13,38 +13,39 @@
 // limitations under the License.
 
 
-// #[macro_use] extern crate uint;
-// #[macro_use] extern crate fixed_hash;
-// #[cfg(test)] extern crate serde_json;
-extern crate schnorr as schnorr_raw;
 
-
-// /// Fixed Integers & Hash
-// pub mod types;
-/// Repub bech32
+/// Repub bytes
+pub use bytes;
+/// bech32
 pub mod bech32;
 /// Serilization
 pub mod ser;
-/// Serde Support
-pub mod mserde;
 /// Parking Lot backed Sync Primitives
 pub mod sync;
 /// To & From Hex
 pub mod hex;
-/// Various Sized Blake2b hash functions
-pub mod hash;
 /// 64bit Time handling
 pub mod tai64;
-/// Repub Bytes
-pub use bytes;
 /// Repub Byteorder
 pub use byteorder;
-/// Merkle Tree
-pub mod merkle;
+/// Keccak-f sponge function
+pub mod sponge;
+/// Variable Encoding Integer
+pub mod varint;
+/// Golomb for block filters
+pub mod golomb;
+/// Export Curve
+pub use curve25519_dalek as dalek;
+/// Various Hash functions & types
+pub mod hash;
+/// Export blake2b
+pub use blake2b_simd as blake2;
 
-pub mod schnorr {
-    /// Repub Schnorr
-    pub use schnorr_raw::*;
 
-    //TODO: Implement Encoding 
+#[inline(always)]
+/// A hack function to use zeroize
+fn zeroize_hack<Z: Default>(z: &mut Z) {
+    use core::{ptr, sync::atomic};
+    unsafe { ptr::write_volatile(z, Z::default()); }
+    atomic::compiler_fence(atomic::Ordering::SeqCst);
 }
