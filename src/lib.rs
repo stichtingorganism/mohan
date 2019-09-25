@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-
 /// Repub bytes
 pub use bytes;
 /// bech32
@@ -40,6 +38,8 @@ pub use curve25519_dalek as dalek;
 pub mod hash;
 /// Export blake2b
 pub use blake2b_simd as blake2;
+/// That extra sauce
+pub mod tools;
 
 
 #[inline(always)]

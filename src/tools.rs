@@ -97,11 +97,11 @@ impl RistrettoBoth {
     /// ```
     /// # extern crate mohan;
     /// #
-    /// use mohan::schnorr::*;
+    /// 
     /// use mohan::tools::RistrettoBoth;
     ///
     /// # fn doctest() -> Option<RistrettoBoth> {
-    /// let public_key_bytes: [u8; PUBLIC_KEY_LENGTH] = [
+    /// let public_key_bytes: [u8; 32] = [
     ///    215,  90, 152,   1, 130, 177,  10, 183, 213,  75, 254, 211, 201, 100,   7,  58,
     ///     14, 225, 114, 243, 218, 166,  35,  37, 175,   2,  26, 104, 247,   7,   81, 26];
     ///
