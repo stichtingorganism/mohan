@@ -44,7 +44,7 @@ pub mod tools;
 
 #[inline(always)]
 /// A hack function to use zeroize
-fn zeroize_hack<Z: Default>(z: &mut Z) {
+pub fn zeroize_hack<Z: Default>(z: &mut Z) {
     use core::{ptr, sync::atomic};
     unsafe { ptr::write_volatile(z, Z::default()); }
     atomic::compiler_fence(atomic::Ordering::SeqCst);
