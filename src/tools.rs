@@ -21,6 +21,7 @@
 
 use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
 use std::fmt::Debug;
+use crate::ser;
 
 
 /// Compressed Ristretto point length
@@ -196,4 +197,25 @@ impl ::core::hash::Hash for RistrettoBoth {
     fn hash<H: ::core::hash::Hasher>(&self, state: &mut H) {
         self.compressed.0.hash(state);
     }
+}
+
+impl ser::Writeable for RistrettoBoth {
+	fn write<W: ser::Writer>(&self, writer: &mut W) -> Result<(), ser::Error> {
+        self.compressed.write(writer)?;
+        Ok(())
+	}
+}
+
+impl ser::Readable for RistrettoBoth {
+	fn read(reader: &mut dyn ser::Reader) -> Result<RistrettoBoth, ser::Error> {
+        let raw = CompressedRistretto::read(reader)?;
+        
+        match raw.decompress() {
+            Some(kosher) => Ok(RistrettoBoth {
+                                compressed: raw,
+                                point: kosher
+                            }),
+            None => Err(ser::Error::CorruptedData)
+        }
+	}
 }
