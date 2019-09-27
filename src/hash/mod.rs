@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 //! Hash Functions
-
 mod sip;
 pub use sip::SipHasher24 as SipHasher;
 
@@ -25,6 +23,4 @@ pub use types::{
     Hashed,
     DefaultHashable
 };
-
-
 
