@@ -40,6 +40,9 @@ pub mod hash;
 pub use blake2b_simd as blake2;
 /// That extra sauce
 pub mod tools;
+/// MMR Tree
+pub mod merkle;
+
 
 
 #[inline(always)]
