@@ -52,8 +52,6 @@ impl Debug for RistrettoBoth {
 
 impl RistrettoBoth {
 
-    const DESCRIPTION : &'static str = "A ristretto point represented as a 32-byte compressed point";
-
     /// Access the compressed Ristretto form
     pub fn as_compressed(&self) -> &CompressedRistretto { &self.compressed }
 

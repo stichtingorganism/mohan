@@ -82,6 +82,11 @@ impl H256 {
 		BigEndian::read_u64(&self.0)
 	}
 
+	/// Convert Hash into a Scalar
+	pub fn to_scalar(&self) -> crate::dalek::scalar::Scalar {
+    	crate::dalek::scalar::Scalar::from_bits(self.0)
+	}
+
 }
 
 impl From<[u8; 32]> for H256 {
