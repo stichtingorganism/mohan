@@ -83,7 +83,7 @@ impl H256 {
 	}
 
 	/// Convert Hash into a Scalar
-	pub fn to_scalar(&self) -> crate::dalek::scalar::Scalar {
+	pub fn into_scalar(&self) -> crate::dalek::scalar::Scalar {
     	crate::dalek::scalar::Scalar::from_bits(self.0)
 	}
 
