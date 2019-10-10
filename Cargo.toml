@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.29"
+version = "0.0.30"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
@@ -30,7 +30,7 @@ default-features = false
 
 
 [features]
-default = ["rand"] 
+default = ["rand", "rand_core"] 
 
 
 [dev-dependencies]
