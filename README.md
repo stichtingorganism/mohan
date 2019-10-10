@@ -1,4 +1,4 @@
-# Mohan: Shared Types & Utils for Organism
+# Mohan: Shared Types & Utils for Organism [![Gitter](https://badges.gitter.im/stichtingorganism/community.svg)](https://gitter.im/stichtingorganism/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 - Hash Types
 - Sync Primitives backed by parkinglot library
