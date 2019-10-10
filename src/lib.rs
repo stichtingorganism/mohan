@@ -47,11 +47,40 @@ mod euka_tree;
 pub use euka_tree::MukaTree;
 
 
+//
+// - Jeffrey Burdges <jeff@web3.foundation>
+//
 
-#[inline(always)]
 /// A hack function to use zeroize
+#[inline(always)]
 pub fn zeroize_hack<Z: Default>(z: &mut Z) {
     use core::{ptr, sync::atomic};
     unsafe { ptr::write_volatile(z, Z::default()); }
     atomic::compiler_fence(atomic::Ordering::SeqCst);
+}
+
+#[cfg(all(feature = "rand_core", feature = "rand"))] 
+pub fn mohan_rand() -> impl RngCore+CryptoRng {
+    ::rand::thread_rng()
+}
+
+#[cfg(all(feature = "rand_core", not(feature = "rand")))] 
+pub fn mohan_rand() -> impl RngCore + CryptoRng {
+    ::rand_core::OsRng::new().unwrap()
+}
+
+#[cfg(not(feature = "rand"))]
+pub fn mohan_rand() -> impl RngCore+CryptoRng {
+    const PRM : &'static str = "Attempted to use functionality that requires system randomness!!";
+
+    struct PanicRng;
+    impl ::rand_core::RngCore for PanicRng {
+        fn next_u32(&mut self) -> u32 {  panic!(&PRM)  }
+        fn next_u64(&mut self) -> u64 {  panic!(&PRM)  }
+        fn fill_bytes(&mut self, _dest: &mut [u8]) {  panic!(&PRM)  }
+        fn try_fill_bytes(&mut self, _dest: &mut [u8]) -> Result<(), ::rand_core::Error> {  panic!(&PRM)  }
+    }
+    impl ::rand_core::CryptoRng for PanicRng {}
+
+    PanicRng
 }
