@@ -679,30 +679,30 @@ impl Writeable for [u8; 4] {
 	}
 }
 
-impl Readable for curve25519_dalek::scalar::Scalar {
-	fn read(reader: &mut dyn Reader) -> Result<curve25519_dalek::scalar::Scalar, Error> {
+impl Readable for crate::dalek::scalar::Scalar {
+	fn read(reader: &mut dyn Reader) -> Result<crate::dalek::scalar::Scalar, Error> {
 		let v = reader.read_fixed_bytes(32)?;
 		let mut a = [0; 32];
 		a.copy_from_slice(&v[..]);
-		Ok(curve25519_dalek::scalar::Scalar::from_bits(a))
+		Ok(crate::dalek::scalar::Scalar::from_bits(a))
 	}
 }
 
-impl Writeable for curve25519_dalek::scalar::Scalar {
+impl Writeable for crate::dalek::scalar::Scalar {
 	fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
 		writer.write_fixed_bytes(self.as_bytes())
 	}
 }
 
 
-impl Readable for curve25519_dalek::ristretto::CompressedRistretto {
-	fn read(reader: &mut dyn Reader) -> Result<curve25519_dalek::ristretto::CompressedRistretto, Error> {
+impl Readable for crate::dalek::ristretto::CompressedRistretto {
+	fn read(reader: &mut dyn Reader) -> Result<crate::dalek::ristretto::CompressedRistretto, Error> {
 		let v = reader.read_fixed_bytes(32)?;
-		Ok(curve25519_dalek::ristretto::CompressedRistretto::from_slice(&v[..]))
+		Ok(crate::dalek::ristretto::CompressedRistretto::from_slice(&v[..]))
 	}
 }
 
-impl Writeable for curve25519_dalek::ristretto::CompressedRistretto {
+impl Writeable for crate::dalek::ristretto::CompressedRistretto {
 	fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
 		writer.write_fixed_bytes(self.as_bytes())
 	}

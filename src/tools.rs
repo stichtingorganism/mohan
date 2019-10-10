@@ -19,7 +19,7 @@
 // Ristretto Helper Abstraction
 //
 
-use curve25519_dalek::ristretto::{CompressedRistretto, RistrettoPoint};
+use crate::dalek::ristretto::{CompressedRistretto, RistrettoPoint};
 use std::fmt::Debug;
 use crate::ser;
 

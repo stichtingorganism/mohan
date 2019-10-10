@@ -33,7 +33,7 @@ pub mod varint;
 /// Golomb for block filters
 pub mod golomb;
 /// Export Curve
-pub use curve25519_dalek as dalek;
+pub use curve25519_dalek_organism as dalek;
 /// Various Hash functions & types
 pub mod hash;
 /// Export blake2b
@@ -66,7 +66,7 @@ pub fn mohan_rand() -> impl rand::RngCore + rand::CryptoRng {
 
 #[cfg(all(feature = "rand_os", not(feature = "rand")))] 
 pub fn mohan_rand() -> impl rand_core::RngCore + rand_core::CryptoRng {
-    ::rand_core::OsRng::new().unwrap()
+    ::rand_core::OsRng::new()
 }
 
 #[cfg(not(feature = "rand"))]
