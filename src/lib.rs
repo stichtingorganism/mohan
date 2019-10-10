@@ -59,18 +59,18 @@ pub fn zeroize_hack<Z: Default>(z: &mut Z) {
     atomic::compiler_fence(atomic::Ordering::SeqCst);
 }
 
-#[cfg(all(feature = "rand_core", feature = "rand"))] 
-pub fn mohan_rand() -> impl RngCore+CryptoRng {
-    ::rand::thread_rng()
+#[cfg(all(feature = "rand_os", feature = "rand"))] 
+pub fn mohan_rand() -> impl rand::RngCore + rand::CryptoRng {
+    ::rand::thread_rng() 
 }
 
-#[cfg(all(feature = "rand_core", not(feature = "rand")))] 
-pub fn mohan_rand() -> impl RngCore + CryptoRng {
+#[cfg(all(feature = "rand_os", not(feature = "rand")))] 
+pub fn mohan_rand() -> impl rand_core::RngCore + rand_core::CryptoRng {
     ::rand_core::OsRng::new().unwrap()
 }
 
 #[cfg(not(feature = "rand"))]
-pub fn mohan_rand() -> impl RngCore+CryptoRng {
+pub fn mohan_rand() -> impl rand_core::RngCore + rand_core::CryptoRng {
     const PRM : &'static str = "Attempted to use functionality that requires system randomness!!";
 
     struct PanicRng;
