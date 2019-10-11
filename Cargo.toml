@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.33"
+version = "0.0.34"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
