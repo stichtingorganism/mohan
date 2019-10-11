@@ -38,7 +38,7 @@ use crate::hash::{
 // balanced tree structure as above.  In that case, parent nodes with no
 // children are also zero and parent nodes with only a single left node
 // are calculated by concatenating the left node with itself before hashing.
-pub fn fast_merkle_root(leaves: &mut Vec<H256>) -> H256 {
+pub fn fast_merkle_root(mut leaves: Vec<H256>) -> H256 {
     // All zero.
 	if leaves.len() == 0 { return H256::zero();}
 
@@ -98,5 +98,5 @@ fn test_to_merkle_fast_short() {
 
 #[test]
 fn test_to_merkle_fast_zero() {
-    assert_eq!(fast_merkle_root(&mut vec![H256::zero()]),  H256::zero());
+    assert_eq!(fast_merkle_root(vec![H256::zero()]),  H256::zero());
 }
