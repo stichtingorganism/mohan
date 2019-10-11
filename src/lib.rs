@@ -42,7 +42,7 @@ pub use blake2b_simd as blake2;
 pub mod tools;
 /// Method to calculate a root of a list of items
 mod fast_merkle_root;
-
+pub use fast_merkle_root::fast_merkle_root;
 
 //
 // - Jeffrey Burdges <jeff@web3.foundation>
