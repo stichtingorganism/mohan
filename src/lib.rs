@@ -40,11 +40,8 @@ pub mod hash;
 pub use blake2b_simd as blake2;
 /// That extra sauce
 pub mod tools;
-/// MMR Tree
-pub mod merkle;
-/// Blake2b 256bit merkle tree varient
-mod euka_tree;
-pub use euka_tree::MukaTree;
+/// Method to calculate a root of a list of items
+mod fast_merkle_root;
 
 
 //

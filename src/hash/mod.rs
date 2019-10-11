@@ -24,3 +24,20 @@ pub use types::{
     DefaultHashable
 };
 
+
+/// Blake2b Hash Function
+pub fn blake256(data: &[u8]) -> H256 {
+    use crate::blake2::{
+        State,
+        Params
+    };
+
+    let mut params = Params::new();
+    params.hash_length(32);
+    let mut engine = params.to_state();
+    engine.update(data);
+    let mut result = [0u8; 32];
+    let output = engine.finalize();
+    result.clone_from_slice(&output.as_bytes());
+    H256::from(result)
+}

@@ -37,7 +37,7 @@ impl H256 {
 		H256([0; 32])
 	}
 
-	fn hash_with<T: Writeable>(&self, other: T) -> H256 {
+	pub fn hash_with<T: Writeable>(&self, other: T) -> H256 {
 		let mut hasher = HashWriter::default();
 		ser::Writeable::write(self, &mut hasher).unwrap();
 		ser::Writeable::write(&other, &mut hasher).unwrap();
