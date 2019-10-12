@@ -82,7 +82,7 @@ impl BlakeHasher {
 
     /// Returns the hash value for the data stream and consumes state.
     #[inline]
-    fn finalize(&self) -> H256 {
+    pub fn finalize(&self) -> H256 {
         let mut result = [0u8; 32];
         let output = self.state.finalize();
         result.clone_from_slice(&output.as_bytes());
