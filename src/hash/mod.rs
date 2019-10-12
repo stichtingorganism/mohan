@@ -24,14 +24,13 @@ pub use types::{
     DefaultHashable
 };
 
-
-/// Blake2b Hash Function
-pub fn blake256(data: &[u8]) -> H256 {
-    use crate::blake2::{
+ use crate::blake2::{
         State,
         Params
     };
 
+/// Blake2b Hash Function
+pub fn blake256(data: &[u8]) -> H256 {
     let mut params = Params::new();
     params.hash_length(32);
     let mut engine = params.to_state();
@@ -40,4 +39,54 @@ pub fn blake256(data: &[u8]) -> H256 {
     let output = engine.finalize();
     result.clone_from_slice(&output.as_bytes());
     H256::from(result)
+}
+
+
+/// Hasher used to build tree @ 256bits
+pub struct BlakeHasher {
+    state: State
+}
+
+impl Default for BlakeHasher {
+    fn default() -> BlakeHasher {
+        BlakeHasher::new()
+    }
+}
+
+impl BlakeHasher {
+    pub fn new() -> Self {
+       
+        let mut params = Params::new();
+        params.hash_length(32);
+
+        Self {
+            state: params.to_state()
+        }
+    }
+
+    pub fn new_personal(personal: &[u8]) -> Self {
+        let mut params = Params::new();
+        params.personal(personal);
+        params.hash_length(32);
+
+        Self {
+            state: params.to_state()
+        }
+    }
+
+    /// Feed data into Hash State
+    #[inline]
+    pub fn write(&mut self, msg: &[u8]) {
+        self.state.update(msg);
+    }
+
+    /// Returns the hash value for the data stream and consumes state.
+    #[inline]
+    fn finalize(&self) -> H256 {
+        let mut result = [0u8; 32];
+        let output = self.state.finalize();
+        result.clone_from_slice(&output.as_bytes());
+        H256::from(result)
+    }
+
 }
