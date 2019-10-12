@@ -89,4 +89,13 @@ impl BlakeHasher {
         H256::from(result)
     }
 
+    /// Method that writes data then returns self
+    pub fn chain(mut self, data: &[u8]) -> Self
+        where
+            Self: Sized,
+    {
+        self.state.update(data);
+        self
+    }
+
 }
