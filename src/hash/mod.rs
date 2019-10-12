@@ -24,23 +24,37 @@ pub use types::{
     DefaultHashable
 };
 
- use crate::blake2::{
-        State,
-        Params
-    };
+use crate::blake2::{
+    State,
+    Params
+};
+use crate::dalek::ristretto::RistrettoPoint;
 
 /// Blake2b Hash Function
+#[inline]
 pub fn blake256(data: &[u8]) -> H256 {
     let mut params = Params::new();
     params.hash_length(32);
-    let mut engine = params.to_state();
-    engine.update(data);
     let mut result = [0u8; 32];
-    let output = engine.finalize();
-    result.clone_from_slice(&output.as_bytes());
+    result.clone_from_slice(&params.hash(data).as_bytes());
     H256::from(result)
 }
 
+/// Blake2b Hash Function
+#[inline]
+pub fn blake512(data: &[u8]) -> [u8; 64] {
+    let mut params = Params::new();
+    params.hash_length(64);
+    let mut result = [0u8; 64];
+    result.clone_from_slice(&params.hash(data).as_bytes());
+    result
+}
+
+/// Mohan varient of hash to Point
+#[inline]
+pub fn hash_to_ristretto(input: &[u8]) -> RistrettoPoint {
+    RistrettoPoint::from_uniform_bytes(&blake512(input))
+}
 
 /// Hasher used to build tree @ 256bits
 pub struct BlakeHasher {
@@ -90,6 +104,7 @@ impl BlakeHasher {
     }
 
     /// Method that writes data then returns self
+    #[inline]
     pub fn chain(mut self, data: &[u8]) -> Self
         where
             Self: Sized,
