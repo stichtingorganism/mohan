@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.40"
+version = "0.0.41"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
@@ -13,7 +13,7 @@ parking_lot = {version = "0.9", features = ["deadlock_detection"]}
 failure = "0.1"
 zeroize = { version = "1.0.0-pre", features = ["zeroize_derive"] }
 byteorder = "1"
-bytes = "0.4"
+bytes = { version = "0.4.12", features = ["serde"] }
 curve25519-dalek-organism = { version = "0.0.*", features = ["serde", "alloc"] }
 blake2b_simd = "0.5"
 rayon = "1.1"
