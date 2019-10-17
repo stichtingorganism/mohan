@@ -44,6 +44,12 @@ pub mod tools;
 mod fast_merkle_root;
 pub use fast_merkle_root::fast_merkle_root;
 
+/// Unsigned 256bit Integer
+#[macro_use] extern crate uint;
+mod u256;
+pub use u256::U256;
+
+
 //
 // - Jeffrey Burdges <jeff@web3.foundation>
 //

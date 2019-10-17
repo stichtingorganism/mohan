@@ -15,7 +15,7 @@
 //! BTC Style VarInt
 
 use crate::ser::{
-	ProtocolVersion, Readable, Reader, Writeable, Writer, Error, ser_vec, AsFixedBytes
+	Readable, Reader, Writeable, Writer, Error
 };
 
 /// A variable-length unsigned integer
@@ -30,9 +30,9 @@ impl VarInt {
     #[inline]
     pub fn len(&self) -> usize {
         match self.0 {
-            0...0xFC             => { 1 }
-            0xFD...0xFFFF        => { 3 }
-            0x10000...0xFFFFFFFF => { 5 }
+            0..=0xFC             => { 1 }
+            0xFD..=0xFFFF        => { 3 }
+            0x10000..=0xFFFFFFFF => { 5 }
             _                    => { 9 }
         }
     }
@@ -98,16 +98,16 @@ impl Readable for VarInt {
 impl Writeable for VarInt {
 	fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
 		match self.0 {
-            0...0xFC => {
+            0..=0xFC => {
                 writer.write_u8(self.0 as u8)?;
                 Ok(())
             },
-            0xFD...0xFFFF => {
+            0xFD..=0xFFFF => {
                 writer.write_u8(0xFD)?;
                 writer.write_u16(self.0 as u16)?;
                 Ok(())
             },
-            0x10000...0xFFFFFFFF => {
+            0x10000..=0xFFFFFFFF => {
                 writer.write_u8(0xFE)?;
                 writer.write_u32(self.0 as u32)?;
                 Ok(())
@@ -124,6 +124,10 @@ impl Writeable for VarInt {
 
 #[test]
 fn serialize_varint_test() {
+    use crate::ser::{
+        ser_vec,
+        ProtocolVersion
+    };
     assert_eq!(ser_vec(&VarInt(10), ProtocolVersion::local()).unwrap(), vec![10u8]);
     assert_eq!(ser_vec(&VarInt(0xFC), ProtocolVersion::local()).unwrap(), vec![0xFCu8]);
     assert_eq!(ser_vec(&VarInt(0xFD), ProtocolVersion::local()).unwrap(), vec![0xFDu8, 0xFD, 0]);

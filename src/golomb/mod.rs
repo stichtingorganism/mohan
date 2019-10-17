@@ -28,8 +28,8 @@ use crate::hash::SipHasher;
 
 
 /// Golomb encoding parameter as in BIP-158, see also https://gist.github.com/sipa/576d5f09c3b86c3b1b75598d799fc845
-const P_BIP158: u8 = 19;
-const M_BIP158: u64 = 784931;
+pub const P_BIP158: u8 = 19;
+pub const M_BIP158: u64 = 784931;
 
 /// Errors that may occur when handling Golomb Coded Sets.
 #[derive(Debug, Fail)]

@@ -100,11 +100,6 @@ struct HashEngine {
 
 impl HashEngine {
 
-    /// Create a new SipHash24 engine.
-    pub fn new() -> HashEngine {
-        HashEngine::with_keys(0, 0)
-    }
-
     /// Create a new SipHash24 engine with keys.
     #[inline]
     fn with_keys(key0: u64, key1: u64) -> HashEngine {

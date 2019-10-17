@@ -17,8 +17,7 @@
 // license that can be found in the LICENSE file.
 
 use crate::hash::{
-    H256,
-    blake256
+    H256
 };
 
 // fast_merkle_root treats the provided slice of hashes as leaves of a merkle tree
@@ -75,13 +74,12 @@ pub fn fast_merkle_root(mut leaves: Vec<H256>) -> H256 {
         leaves.split_off(drain_start);
 	}
 
-    println!("final: {}", leaves[0]);
 	leaves[0]
 }
 
 #[test]
 fn test_to_merkle_fast_short() {
-	let mut inputs = vec![
+	let _inputs = vec![
         H256::from_hex("5e574591d900f7f9abb8f8eb31cc9330247d27ba293ad79c348d602ece717b8b").unwrap(),
         H256::from_hex("b3b70fe08c2da744c9559d533e8db35b3bfefba1b0f1c7b31e7d9d523c00a426").unwrap(),
         H256::from_hex("dd3058a7fc691ff4dee0a8cd6030f404ffda7e7aee88aff3985f7b2bbe4792f7").unwrap(),
