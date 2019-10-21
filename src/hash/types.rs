@@ -65,6 +65,11 @@ impl H256 {
 		&self.0
 	}
 
+	/// Returns a byte slice of the hash contents.
+	pub fn to_bytes(&self) -> [u8; 32] {
+		self.0
+	}
+
 	/// Convert a hash to hex string format.
 	pub fn to_hex(&self) -> String {
 		hex::to_hex(&self.to_vec())
