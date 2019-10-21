@@ -87,6 +87,11 @@ impl H256 {
     	crate::dalek::scalar::Scalar::from_bits(self.0)
 	}
 
+	///Flip into u256
+	pub fn to_uint(&self) -> crate::U256 {
+		crate::U256::from(self.0)
+	}
+
 }
 
 impl From<[u8; 32]> for H256 {

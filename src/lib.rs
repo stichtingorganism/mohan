@@ -29,7 +29,8 @@ pub use byteorder;
 /// Keccak-f sponge function
 pub mod sponge;
 /// Variable Encoding Integer
-pub mod varint;
+mod varint;
+pub use varint::VarInt;
 /// Golomb for block filters
 pub mod golomb;
 /// Export Curve
@@ -44,10 +45,10 @@ pub mod tools;
 mod fast_merkle_root;
 pub use fast_merkle_root::fast_merkle_root;
 
-/// Unsigned 256bit Integer
-#[macro_use] extern crate uint;
+
 mod u256;
 pub use u256::U256;
+
 
 
 //

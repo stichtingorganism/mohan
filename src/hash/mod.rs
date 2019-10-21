@@ -32,6 +32,17 @@ use crate::dalek::ristretto::RistrettoPoint;
 
 /// Blake2b Hash Function
 #[inline]
+pub fn blake160(data: &[u8]) -> [u8; 20] {
+    let mut params = Params::new();
+    params.hash_length(20);
+    let mut result = [0u8; 20];
+    result.clone_from_slice(&params.hash(data).as_bytes());
+    result
+}
+
+
+/// Blake2b Hash Function
+#[inline]
 pub fn blake256(data: &[u8]) -> H256 {
     let mut params = Params::new();
     params.hash_length(32);
