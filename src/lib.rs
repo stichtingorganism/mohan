@@ -46,10 +46,11 @@ mod fast_merkle_root;
 pub use fast_merkle_root::fast_merkle_root;
 
 
-mod u256;
-pub use u256::U256;
+#[macro_use] extern crate uint;
 
-
+construct_uint! {
+	pub struct U256(4);
+}
 
 //
 // - Jeffrey Burdges <jeff@web3.foundation>
