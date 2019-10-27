@@ -504,28 +504,6 @@ impl<'a> Reader for StreamingReader<'a> {
 }
 
 
-// /// Collections of items must be sorted lexicographically and all unique.
-// pub trait VerifySortedAndUnique<T> {
-// 	/// Verify a collection of items is sorted and all unique.
-// 	fn verify_sorted_and_unique(&self) -> Result<(), Error>;
-// }
-
-// impl<T: Hashed> VerifySortedAndUnique<T> for Vec<T> {
-
-// 	fn verify_sorted_and_unique(&self) -> Result<(), Error> {
-// 		let hashes = self.iter().map(|item| item.hash()).collect::<Vec<_>>();
-// 		let pairs = hashes.windows(2);
-// 		for pair in pairs {
-// 			if pair[0] > pair[1] {
-// 				return Err(Error::SortError);
-// 			} else if pair[0] == pair[1] {
-// 				return Err(Error::DuplicateError);
-// 			}
-// 		}
-// 		Ok(())
-// 	}
-// }
-
 /// Utility wrapper for an underlying byte Writer. Defines higher level methods
 /// to write numbers, byte vectors, hashes, etc.
 pub struct BinWriter<'a> {
