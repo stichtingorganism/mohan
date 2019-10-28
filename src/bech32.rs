@@ -13,24 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Bech32 (BIP-173) checksummed Base32 data encoding 
+//! Bech32 (BIP-173) checksummed Base32 data encoding
 
 //
 // A Bech32 string is at most 90 characters long and consists of:
 //     - The human-readable part, which is intended to convey the type of data, or anything else that is relevant to the reader.
-//       This part MUST contain 1 to 83 US-ASCII characters, with each character having a value in the range [33-126]. 
+//       This part MUST contain 1 to 83 US-ASCII characters, with each character having a value in the range [33-126].
 //       HRP validity may be further restricted by specific applications.
 //
-//     - The separator, which is always "1". In case "1" is allowed inside the human-readable part, 
+//     - The separator, which is always "1". In case "1" is allowed inside the human-readable part,
 //       the last one in the string is the separator.
 //
 //     - The data part, which is at least 6 characters long and only consists of alphanumeric characters excluding "1", "b", "i", and "o".
 //
 // The lowercase form is used when determining a character's value for checksum purposes.
-// Encoders MUST always output an all lowercase Bech32 string. 
+// Encoders MUST always output an all lowercase Bech32 string.
 // Decoders MUST NOT accept strings where some characters are uppercase and some are lowercase.
 // Inside QR codes uppercase SHOULD be used
-
 
 use failure::Fail;
 use std::fmt;
@@ -40,22 +39,18 @@ const SEP: char = '1';
 
 /// Encoding character set. Maps data value -> char
 const CHARSET: [char; 32] = [
-    'q','p','z','r','y','9','x','8',
-    'g','f','2','t','v','d','w','0',
-    's','3','j','n','5','4','k','h',
-    'c','e','6','m','u','a','7','l'
+    'q', 'p', 'z', 'r', 'y', '9', 'x', '8', 'g', 'f', '2', 't', 'v', 'd', 'w', '0', 's', '3', 'j',
+    'n', '5', '4', 'k', 'h', 'c', 'e', '6', 'm', 'u', 'a', '7', 'l',
 ];
 
 /// Reverse character set. Maps ASCII byte -> CHARSET index on [0,31]
 const CHARSET_REV: [i8; 128] = [
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    15, -1, 10, 17, 21, 20, 26, 30,  7,  5, -1, -1, -1, -1, -1, -1,
-    -1, 29, -1, 24, 13, 25,  9,  8, 23, -1, 18, 22, 31, 27, 19, -1,
-     1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1,
-    -1, 29, -1, 24, 13, 25,  9,  8, 23, -1, 18, 22, 31, 27, 19, -1,
-    1,  0,  3, 16, 11, 28, 12, 14,  6,  4,  2, -1, -1, -1, -1, -1
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+    15, -1, 10, 17, 21, 20, 26, 30, 7, 5, -1, -1, -1, -1, -1, -1, -1, 29, -1, 24, 13, 25, 9, 8, 23,
+    -1, 18, 22, 31, 27, 19, -1, 1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1, -1, -1, -1, -1, -1, 29,
+    -1, 24, 13, 25, 9, 8, 23, -1, 18, 22, 31, 27, 19, -1, 1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1,
+    -1, -1, -1, -1,
 ];
 
 /// Generator coefficients
@@ -178,7 +173,6 @@ pub trait FromBase32: Sized {
     fn from_base32(b32: &[u5]) -> Result<Self, Self::Err>;
 }
 
-
 /// A trait for converting a value to a type `T` that represents a `u5` slice.
 pub trait ToBase32 {
     /// Convert `Self` to base32 vector
@@ -194,13 +188,12 @@ pub trait ToBase32 {
 }
 
 /// Interface to calculate the length of the base32 representation before actually serializing
-pub trait Base32Len : ToBase32 {
+pub trait Base32Len: ToBase32 {
     /// Calculate the base32 serialized length
     fn base32_len(&self) -> usize;
 }
 
 impl<T: AsRef<[u8]>> ToBase32 for T {
-
     fn write_base32<W: WriteBase32>(&self, writer: &mut W) -> Result<(), <W as WriteBase32>::Err> {
         // Amount of bits left over from last round, stored in buffer.
         let mut buffer_bits = 0u32;
@@ -214,7 +207,7 @@ impl<T: AsRef<[u8]>> ToBase32 for T {
             // buffer holds too many bits, so we don't have to combine buffer bits with new bits
             // from this rounds byte.
             if buffer_bits >= 5 {
-                writer.write_u5(u5((buffer & 0b11111000) >> 3 ))?;
+                writer.write_u5(u5((buffer & 0b11111000) >> 3))?;
                 buffer = buffer << 5;
                 buffer_bits -= 5;
             }
@@ -269,7 +262,10 @@ impl<'f, T: AsRef<[u8]>> CheckBase32<Vec<u5>> for T {
     type Err = Error;
 
     fn check_base32(self) -> Result<Vec<u5>, Self::Err> {
-        self.as_ref().iter().map(|x| u5::try_from_u8(*x)).collect::<Result<Vec<u5>, Error>>()
+        self.as_ref()
+            .iter()
+            .map(|x| u5::try_from_u8(*x))
+            .collect::<Result<Vec<u5>, Error>>()
     }
 }
 
@@ -349,7 +345,6 @@ impl FromBase32 for Vec<u8> {
     }
 }
 
-
 /// Allocationless Bech32 writer that accumulates the checksum data internally and writes them out
 /// in the end.
 pub struct Bech32Writer<'a> {
@@ -358,7 +353,6 @@ pub struct Bech32Writer<'a> {
 }
 
 impl<'a> Bech32Writer<'a> {
-
     /// Creates a new writer that can write a bech32 string without allocating itself.
     ///
     /// This is a rather low-level API and doesn't check the HRP or data length for standard
@@ -410,15 +404,13 @@ impl<'a> Bech32Writer<'a> {
         let plm: u32 = self.chk ^ 1;
 
         for p in 0..6 {
-            self.formatter.write_char(
-                u5(((plm >> (5 * (5 - p))) & 0x1f) as u8).to_char()
-            )?;
+            self.formatter
+                .write_char(u5(((plm >> (5 * (5 - p))) & 0x1f) as u8).to_char())?;
         }
 
         Ok(())
     }
 }
-
 
 impl<'a> WriteBase32 for Bech32Writer<'a> {
     type Err = fmt::Error;
@@ -432,10 +424,10 @@ impl<'a> WriteBase32 for Bech32Writer<'a> {
 
 impl<'a> Drop for Bech32Writer<'a> {
     fn drop(&mut self) {
-        self.inner_finalize().expect("Unhandled error writing the checksum on drop.")
+        self.inner_finalize()
+            .expect("Unhandled error writing the checksum on drop.")
     }
 }
-
 
 fn hrp_expand(hrp: &[u8]) -> Vec<u5> {
     let mut v: Vec<u5> = Vec::new();
@@ -513,7 +505,7 @@ pub fn encode_to_fmt<T: AsRef<[u5]>>(
                 // Finalize manually to avoid panic on drop if write fails
                 writer.finalize()
             }))
-        },
+        }
         Err(e) => Ok(Err(e)),
     }
 }
@@ -630,7 +622,11 @@ mod tests {
         for s in strings {
             let decode_result = decode(s);
             if !decode_result.is_ok() {
-                panic!("Did not decode: {:?} Reason: {:?}", s, decode_result.unwrap_err());
+                panic!(
+                    "Did not decode: {:?} Reason: {:?}",
+                    s,
+                    decode_result.unwrap_err()
+                );
             }
             assert!(decode_result.is_ok());
             let decoded = decode_result.unwrap();
@@ -668,7 +664,12 @@ mod tests {
                 println!("{:?}", dec_result.unwrap());
                 panic!("Should be invalid: {:?}", s);
             }
-            assert_eq!(dec_result.unwrap_err(), expected_error, "testing input '{}'", s);
+            assert_eq!(
+                dec_result.unwrap_err(),
+                expected_error,
+                "testing input '{}'",
+                s
+            );
         }
     }
 
@@ -681,7 +682,13 @@ mod tests {
             (vec![0x01], 8, 8, true, vec![0x01]),
             (vec![0x01], 8, 4, true, vec![0x00, 0x01]),
             (vec![0x01], 8, 2, true, vec![0x00, 0x00, 0x00, 0x01]),
-            (vec![0x01], 8, 1, true, vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
+            (
+                vec![0x01],
+                8,
+                1,
+                true,
+                vec![0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01],
+            ),
             (vec![0xff], 8, 5, true, vec![0x1f, 0x1c]),
             (vec![0x1f, 0x1c], 5, 8, false, vec![0xff]),
         ];
@@ -731,7 +738,10 @@ mod tests {
         assert!([0u8, 1, 2, 30, 31, 255].check_base32().is_err());
 
         assert!([1u8, 2, 3, 4].check_base32().is_ok());
-        assert_eq!([30u8, 31, 35, 20].check_base32(), Err(Error::InvalidData(35)));
+        assert_eq!(
+            [30u8, 31, 35, 20].check_base32(),
+            Err(Error::InvalidData(35))
+        );
     }
 
     #[test]
@@ -745,7 +755,10 @@ mod tests {
     #[test]
     fn from_base32() {
         use FromBase32;
-        assert_eq!(Vec::from_base32(&[0x1f, 0x1c].check_base32().unwrap()), Ok(vec![0xff]));
+        assert_eq!(
+            Vec::from_base32(&[0x1f, 0x1c].check_base32().unwrap()),
+            Ok(vec![0xff])
+        );
         assert_eq!(
             Vec::from_base32(&[0x1f, 0x1f].check_base32().unwrap()),
             Err(Error::InvalidPadding)
@@ -770,8 +783,9 @@ mod tests {
             }
         }
 
-        let expected_rev_charset =
-            (0u8..128).map(|i| get_char_value(i as char)).collect::<Vec<_>>();
+        let expected_rev_charset = (0u8..128)
+            .map(|i| get_char_value(i as char))
+            .collect::<Vec<_>>();
 
         assert_eq!(&(CHARSET_REV[..]), expected_rev_charset.as_slice());
     }

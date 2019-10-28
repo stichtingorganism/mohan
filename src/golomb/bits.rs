@@ -1,6 +1,6 @@
 //! Bit twingler
-use std::io;
 use std::cmp;
+use std::io;
 
 /// Bitwise stream reader
 pub struct BitStreamReader<'a> {
@@ -22,7 +22,10 @@ impl<'a> BitStreamReader<'a> {
     /// Read nbit bits
     pub fn read(&mut self, mut nbits: u8) -> Result<u64, io::Error> {
         if nbits > 64 {
-            return Err(io::Error::new(io::ErrorKind::Other, "can not read more than 64 bits at once"));
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "can not read more than 64 bits at once",
+            ));
         }
         let mut data = 0u64;
         while nbits > 0 {
@@ -60,10 +63,13 @@ impl<'a> BitStreamWriter<'a> {
     /// Write nbits bits from data
     pub fn write(&mut self, data: u64, mut nbits: u8) -> Result<usize, io::Error> {
         if nbits > 64 {
-            return Err(io::Error::new(io::ErrorKind::Other, "can not write more than 64 bits at once"));
+            return Err(io::Error::new(
+                io::ErrorKind::Other,
+                "can not write more than 64 bits at once",
+            ));
         }
         let mut wrote = 0;
-        
+
         while nbits > 0 {
             let bits = cmp::min(8 - self.offset, nbits);
             self.buffer[0] |= ((data << (64 - nbits)) >> (64 - 8 + self.offset)) as u8;
@@ -89,7 +95,6 @@ impl<'a> BitStreamWriter<'a> {
     }
 }
 
-
 #[test]
 fn test_bit_stream() {
     use std::io::Cursor;
@@ -108,8 +113,14 @@ fn test_bit_stream() {
     }
 
     let bytes = out.into_inner();
-    assert_eq!("01011010110000110000000001110000", format!("{:08b}{:08b}{:08b}{:08b}", bytes[0], bytes[1], bytes[2], bytes[3]));
-    
+    assert_eq!(
+        "01011010110000110000000001110000",
+        format!(
+            "{:08b}{:08b}{:08b}{:08b}",
+            bytes[0], bytes[1], bytes[2], bytes[3]
+        )
+    );
+
     {
         let mut input = Cursor::new(bytes);
         let mut reader = BitStreamReader::new(&mut input);

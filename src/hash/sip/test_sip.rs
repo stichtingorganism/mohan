@@ -54,8 +54,6 @@ fn hash<T: Hash>(x: &T) -> u64 {
     hash_with(SipHasher24::new(), x)
 }
 
-
-
 #[test]
 #[allow(unused_must_use)]
 fn test_siphash_2_4() {

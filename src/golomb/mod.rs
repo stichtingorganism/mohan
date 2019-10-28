@@ -16,16 +16,12 @@
 //!
 
 mod bits;
-use bits::{
-    BitStreamReader,
-    BitStreamWriter
-};
+use bits::{BitStreamReader, BitStreamWriter};
 
-use std::collections::HashSet;
-use failure::Fail;
-use std::{cmp, io};
 use crate::hash::SipHasher;
-
+use failure::Fail;
+use std::collections::HashSet;
+use std::{cmp, io};
 
 /// Golomb encoding parameter as in BIP-158, see also https://gist.github.com/sipa/576d5f09c3b86c3b1b75598d799fc845
 pub const P_BIP158: u8 = 19;
@@ -59,9 +55,13 @@ fn map_to_range(hash: u64, nm: u64) -> u64 {
     // ((hash as u128 * nm as u128) >> 64) as u64
 
     #[inline]
-    fn l(n: u64) -> u64 { n & 0xffffffff }
+    fn l(n: u64) -> u64 {
+        n & 0xffffffff
+    }
     #[inline]
-    fn h(n: u64) -> u64 { n >> 32 }
+    fn h(n: u64) -> u64 {
+        n >> 32
+    }
 
     let a = h(hash);
     let b = l(hash);
@@ -71,17 +71,14 @@ fn map_to_range(hash: u64, nm: u64) -> u64 {
     a * c + h(a * d + c * b + h(b * d))
 }
 
-
 /// Golomb Coded Set Filter
 struct GCSFilter {
     k0: u64, // sip hash key
     k1: u64, // sip hash key
-    p: u8
+    p: u8,
 }
 
-
 impl GCSFilter {
-
     /// Create a new filter
     fn new(k0: u64, k1: u64, p: u8) -> GCSFilter {
         if p == 0 {
@@ -128,19 +125,23 @@ pub struct GCSFilterWriter<'a> {
     filter: GCSFilter,
     writer: &'a mut dyn io::Write,
     elements: HashSet<Vec<u8>>,
-    m: u64
+    m: u64,
 }
 
-
 impl<'a> GCSFilterWriter<'a> {
-
     /// Create a new GCS writer wrapping a generic writer, with specific seed to siphash
-    pub fn new(writer: &'a mut dyn io::Write, k0: u64, k1: u64, m: u64, p: u8) -> GCSFilterWriter<'a> {
+    pub fn new(
+        writer: &'a mut dyn io::Write,
+        k0: u64,
+        k1: u64,
+        m: u64,
+        p: u8,
+    ) -> GCSFilterWriter<'a> {
         GCSFilterWriter {
             filter: GCSFilter::new(k0, k1, p),
             writer,
             elements: HashSet::new(),
-            m
+            m,
         }
     }
 
@@ -153,12 +154,14 @@ impl<'a> GCSFilterWriter<'a> {
 
     /// write the filter to the wrapped writer
     pub fn finish(&mut self) -> Result<usize, io::Error> {
-
         let nm = self.elements.len() as u64 * self.m;
 
         // map hashes to [0, n_elements * M)
-        let mut mapped: Vec<_> = self.elements.iter()
-            .map(|e| map_to_range(self.filter.hash(e.as_slice()), nm)).collect();
+        let mut mapped: Vec<_> = self
+            .elements
+            .iter()
+            .map(|e| map_to_range(self.filter.hash(e.as_slice()), nm))
+            .collect();
         mapped.sort();
 
         // write number of elements as u64
@@ -183,23 +186,27 @@ impl<'a> GCSFilterWriter<'a> {
     }
 }
 
-
 /// Golomb-Rice encoded filter reader
 pub struct GCSFilterReader {
     filter: GCSFilter,
-    m: u64
+    m: u64,
 }
 
 impl GCSFilterReader {
-
     /// Create a new filter reader with specific seed to siphash
     pub fn new(k0: u64, k1: u64, m: u64, p: u8) -> GCSFilterReader {
-        GCSFilterReader { filter: GCSFilter::new(k0, k1, p), m }
+        GCSFilterReader {
+            filter: GCSFilter::new(k0, k1, p),
+            m,
+        }
     }
 
     /// match any query pattern
-    pub fn match_any(&self, reader: &mut dyn io::Read, query: &mut dyn Iterator<Item=&[u8]>) -> Result<bool, Error> {
-
+    pub fn match_any(
+        &self,
+        reader: &mut dyn io::Read,
+        query: &mut dyn Iterator<Item = &[u8]>,
+    ) -> Result<bool, Error> {
         let mut decoder = reader;
         //decode len in u64
         let n_elements: u64 = crate::ser::deserialize_default(&mut decoder).unwrap_or(0u64);
@@ -207,7 +214,9 @@ impl GCSFilterReader {
         let ref mut reader = decoder;
         // map hashes to [0, n_elements << grp]
         let nm = n_elements * self.m;
-        let mut mapped = query.map(|e| map_to_range(self.filter.hash(e), nm)).collect::<Vec<_>>();
+        let mut mapped = query
+            .map(|e| map_to_range(self.filter.hash(e), nm))
+            .collect::<Vec<_>>();
         // sort
         mapped.sort();
         if mapped.is_empty() {
@@ -241,7 +250,11 @@ impl GCSFilterReader {
     }
 
     /// match all query pattern
-    pub fn match_all(&self, reader: &mut dyn io::Read, query: &mut dyn Iterator<Item=&[u8]>) -> Result<bool, Error> {
+    pub fn match_all(
+        &self,
+        reader: &mut dyn io::Read,
+        query: &mut dyn Iterator<Item = &[u8]>,
+    ) -> Result<bool, Error> {
         //read length
         let mut decoder = reader;
         let n_elements: u64 = crate::ser::deserialize_default(&mut decoder).unwrap_or(0u64);
@@ -249,7 +262,9 @@ impl GCSFilterReader {
         let ref mut reader = decoder;
         // map hashes to [0, n_elements << grp]
         let nm = n_elements * self.m;
-        let mut mapped = query.map(|e| map_to_range(self.filter.hash(e), nm)).collect::<Vec<_>>();
+        let mut mapped = query
+            .map(|e| map_to_range(self.filter.hash(e), nm))
+            .collect::<Vec<_>>();
 
         // sort
         mapped.sort();
@@ -286,12 +301,10 @@ impl GCSFilterReader {
     }
 }
 
-
-
 #[test]
-fn test_filter () {
+fn test_filter() {
     use std::io::Cursor;
-    
+
     let mut patterns = HashSet::new();
 
     patterns.insert(hex::decode("000000").unwrap());
@@ -323,31 +336,37 @@ fn test_filter () {
 
     let bytes = out.into_inner();
     {
-            let mut query = Vec::new();
-            query.push(hex::decode("abcdef").unwrap());
-            query.push(hex::decode("eeeeee").unwrap());
+        let mut query = Vec::new();
+        query.push(hex::decode("abcdef").unwrap());
+        query.push(hex::decode("eeeeee").unwrap());
 
-            let reader = GCSFilterReader::new(0, 0, M_BIP158, P_BIP158);
-            let mut input = Cursor::new(bytes.clone());
-            assert!(reader.match_any(&mut input, &mut query.iter().map(|v| v.as_slice())).unwrap());
+        let reader = GCSFilterReader::new(0, 0, M_BIP158, P_BIP158);
+        let mut input = Cursor::new(bytes.clone());
+        assert!(reader
+            .match_any(&mut input, &mut query.iter().map(|v| v.as_slice()))
+            .unwrap());
     }
     {
-            let mut query = Vec::new();
-            query.push(hex::decode("abcdef").unwrap());
-            query.push(hex::decode("123456").unwrap());
+        let mut query = Vec::new();
+        query.push(hex::decode("abcdef").unwrap());
+        query.push(hex::decode("123456").unwrap());
 
-            let reader = GCSFilterReader::new(0, 0, M_BIP158, P_BIP158);
-            let mut input = Cursor::new(bytes.clone());
-            assert!(!reader.match_any(&mut input, &mut query.iter().map(|v| v.as_slice())).unwrap());
+        let reader = GCSFilterReader::new(0, 0, M_BIP158, P_BIP158);
+        let mut input = Cursor::new(bytes.clone());
+        assert!(!reader
+            .match_any(&mut input, &mut query.iter().map(|v| v.as_slice()))
+            .unwrap());
     }
     {
-            let reader = GCSFilterReader::new(0, 0, M_BIP158, P_BIP158);
-            let mut query = Vec::new();
-            for p in &patterns {
-                query.push(p.clone());
-            }
-            let mut input = Cursor::new(bytes.clone());
-            assert!(reader.match_all(&mut input, &mut query.iter().map(|v| v.as_slice())).unwrap());
+        let reader = GCSFilterReader::new(0, 0, M_BIP158, P_BIP158);
+        let mut query = Vec::new();
+        for p in &patterns {
+            query.push(p.clone());
+        }
+        let mut input = Cursor::new(bytes.clone());
+        assert!(reader
+            .match_all(&mut input, &mut query.iter().map(|v| v.as_slice()))
+            .unwrap());
     }
 
     {
@@ -359,6 +378,8 @@ fn test_filter () {
 
         query.push(hex::decode("abcdef").unwrap());
         let mut input = Cursor::new(bytes.clone());
-        assert!(!reader.match_all(&mut input, &mut query.iter().map(|v| v.as_slice())).unwrap());
+        assert!(!reader
+            .match_all(&mut input, &mut query.iter().map(|v| v.as_slice()))
+            .unwrap());
     }
 }

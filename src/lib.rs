@@ -16,12 +16,12 @@
 pub use bytes;
 /// bech32
 pub mod bech32;
+/// To & From Hex
+pub mod hex;
 /// Serilization
 pub mod ser;
 /// Parking Lot backed Sync Primitives
 pub mod sync;
-/// To & From Hex
-pub mod hex;
 /// 64bit Time handling
 pub mod tai64;
 /// Repub Byteorder
@@ -39,21 +39,25 @@ pub use curve25519_dalek_organism as dalek;
 pub mod hash;
 /// Export blake2b
 pub use blake2b_simd as blake2;
-/// That extra sauce
-pub mod tools;
 /// Method to calculate a root of a list of items
 mod fast_merkle_root;
+/// That extra sauce
+pub mod tools;
 pub use fast_merkle_root::fast_merkle_root;
 
 /// U256 compact representation
 mod compact;
 pub use compact::Compact;
 
-#[macro_use] extern crate uint;
+#[macro_use]
+extern crate uint;
 
 construct_uint! {
-	pub struct U256(4);
+    pub struct U256(4);
 }
+
+mod fisher_yates;
+pub use fisher_yates::fisher_yates;
 
 //
 // - Jeffrey Burdges <jeff@web3.foundation>
@@ -63,30 +67,40 @@ construct_uint! {
 #[inline(always)]
 pub fn zeroize_hack<Z: Default>(z: &mut Z) {
     use core::{ptr, sync::atomic};
-    unsafe { ptr::write_volatile(z, Z::default()); }
+    unsafe {
+        ptr::write_volatile(z, Z::default());
+    }
     atomic::compiler_fence(atomic::Ordering::SeqCst);
 }
 
-#[cfg(all(feature = "rand_os", feature = "rand"))] 
+#[cfg(all(feature = "rand_os", feature = "rand"))]
 pub fn mohan_rand() -> impl rand::RngCore + rand::CryptoRng {
-    ::rand::thread_rng() 
+    ::rand::thread_rng()
 }
 
-#[cfg(all(feature = "rand_os", not(feature = "rand")))] 
+#[cfg(all(feature = "rand_os", not(feature = "rand")))]
 pub fn mohan_rand() -> impl rand_core::RngCore + rand_core::CryptoRng {
     ::rand_core::OsRng::new()
 }
 
 #[cfg(not(feature = "rand"))]
 pub fn mohan_rand() -> impl rand_core::RngCore + rand_core::CryptoRng {
-    const PRM : &'static str = "Attempted to use functionality that requires system randomness!!";
+    const PRM: &'static str = "Attempted to use functionality that requires system randomness!!";
 
     struct PanicRng;
     impl ::rand_core::RngCore for PanicRng {
-        fn next_u32(&mut self) -> u32 {  panic!(&PRM)  }
-        fn next_u64(&mut self) -> u64 {  panic!(&PRM)  }
-        fn fill_bytes(&mut self, _dest: &mut [u8]) {  panic!(&PRM)  }
-        fn try_fill_bytes(&mut self, _dest: &mut [u8]) -> Result<(), ::rand_core::Error> {  panic!(&PRM)  }
+        fn next_u32(&mut self) -> u32 {
+            panic!(&PRM)
+        }
+        fn next_u64(&mut self) -> u64 {
+            panic!(&PRM)
+        }
+        fn fill_bytes(&mut self, _dest: &mut [u8]) {
+            panic!(&PRM)
+        }
+        fn try_fill_bytes(&mut self, _dest: &mut [u8]) -> Result<(), ::rand_core::Error> {
+            panic!(&PRM)
+        }
     }
     impl ::rand_core::CryptoRng for PanicRng {}
 

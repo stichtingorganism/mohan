@@ -18,7 +18,6 @@ use std::mem;
 use std::ptr;
 use std::slice;
 
-
 /// An implementation of SipHash 2-4.
 ///
 /// See: <https://131002.net/siphash/>
@@ -33,7 +32,6 @@ use std::slice;
 /// cryptographic uses of this implementation are _strongly discouraged_.
 #[derive(Debug, Clone, Copy, Default)]
 struct Sip24Rounds;
-
 
 macro_rules! compress {
     ($state:expr) => {{
@@ -99,7 +97,6 @@ struct HashEngine {
 }
 
 impl HashEngine {
-
     /// Create a new SipHash24 engine with keys.
     #[inline]
     fn with_keys(key0: u64, key1: u64) -> HashEngine {
@@ -178,9 +175,7 @@ impl HashEngine {
     }
 }
 
-
 impl hash::Hasher for HashEngine {
-    
     // see short_write comment for explanation
     #[inline]
     fn write_usize(&mut self, i: usize) {
@@ -290,10 +285,10 @@ impl SipHasher24 {
     #[inline]
     pub fn hash_to_u64_with_keys(k0: u64, k1: u64, data: &[u8]) -> u64 {
         use std::hash::Hasher;
-        
+
         let mut engine = HashEngine::with_keys(k0, k1);
         engine.write(data);
-        
+
         Self::from_engine_to_u64(engine)
     }
 
@@ -316,7 +311,6 @@ impl SipHasher24 {
 }
 
 impl hash::Hasher for SipHasher24 {
-
     #[inline]
     fn write(&mut self, msg: &[u8]) {
         self.hasher.write(msg)

@@ -17,19 +17,20 @@ mod sip;
 pub use sip::SipHasher24 as SipHasher;
 
 mod types;
-pub use types::{
-    H256,
-    HashWriter,
-    Hashed,
-    DefaultHashable
-};
+pub use types::{DefaultHashable, HashWriter, Hashed, H256};
 
-use crate::blake2::{
-    State,
-    Params
-};
+use crate::blake2::{Params, State};
 use crate::dalek::ristretto::RistrettoPoint;
 
+/// Blake2b Hash Function
+#[inline]
+pub fn blake160(data: &[u8]) -> H256 {
+    let mut params = Params::new();
+    params.hash_length(32);
+    let mut result = [0u8; 32];
+    result.clone_from_slice(&params.hash(data).as_bytes());
+    H256::from(result)
+}
 
 /// Blake2b Hash Function
 #[inline]
@@ -59,7 +60,7 @@ pub fn hash_to_ristretto(input: &[u8]) -> RistrettoPoint {
 
 /// Hasher used to build tree @ 256bits
 pub struct BlakeHasher {
-    state: State
+    state: State,
 }
 
 impl Default for BlakeHasher {
@@ -70,12 +71,11 @@ impl Default for BlakeHasher {
 
 impl BlakeHasher {
     pub fn new() -> Self {
-       
         let mut params = Params::new();
         params.hash_length(32);
 
         Self {
-            state: params.to_state()
+            state: params.to_state(),
         }
     }
 
@@ -85,7 +85,7 @@ impl BlakeHasher {
         params.hash_length(32);
 
         Self {
-            state: params.to_state()
+            state: params.to_state(),
         }
     }
 
@@ -107,11 +107,10 @@ impl BlakeHasher {
     /// Method that writes data then returns self
     #[inline]
     pub fn chain(mut self, data: &[u8]) -> Self
-        where
-            Self: Sized,
+    where
+        Self: Sized,
     {
         self.state.update(data);
         self
     }
-
 }

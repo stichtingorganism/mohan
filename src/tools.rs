@@ -1,4 +1,3 @@
-
 // Copyright 2019 Stichting Organism
 // Jeff Burdges <jeff@web3.foundation>
 //
@@ -14,15 +13,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 //
 // Ristretto Helper Abstraction
 //
 
 use crate::dalek::ristretto::{CompressedRistretto, RistrettoPoint};
-use std::fmt::Debug;
 use crate::ser;
-
+use std::fmt::Debug;
 
 /// Compressed Ristretto point length
 pub const RISTRETTO_POINT_LENGTH: usize = 32;
@@ -31,7 +28,7 @@ pub const RISTRETTO_POINT_LENGTH: usize = 32;
 /// as well as the corresponding `CompressedRistretto`.  It provides
 /// a convenient middle ground for protocols that both hash compressed
 /// points to derive scalars for use with uncompressed points.
-#[derive(Copy, Clone, Default, Eq)]  // PartialEq optimnized below
+#[derive(Copy, Clone, Default, Eq)] // PartialEq optimnized below
 pub struct RistrettoBoth {
     compressed: CompressedRistretto,
     point: RistrettoPoint,
@@ -51,30 +48,32 @@ impl Debug for RistrettoBoth {
 }
 
 impl RistrettoBoth {
-
     /// Access the compressed Ristretto form
-    pub fn as_compressed(&self) -> &CompressedRistretto { &self.compressed }
+    pub fn as_compressed(&self) -> &CompressedRistretto {
+        &self.compressed
+    }
 
     /// Extract the compressed Ristretto form
-    pub fn into_compressed(self) -> CompressedRistretto { self.compressed }
+    pub fn into_compressed(self) -> CompressedRistretto {
+        self.compressed
+    }
 
     /// Access the point form
-    pub fn as_point(&self) -> &RistrettoPoint { &self.point }
+    pub fn as_point(&self) -> &RistrettoPoint {
+        &self.point
+    }
 
     /// Extract the point form
-    pub fn into_point(self) -> RistrettoPoint { self.point }
+    pub fn into_point(self) -> RistrettoPoint {
+        self.point
+    }
 
     /// Decompress into the `RistrettoBoth` format that also retains the
     /// compressed form.
     pub fn from_compressed(compressed: CompressedRistretto) -> Option<RistrettoBoth> {
         match compressed.decompress() {
             None => None,
-            Some(point) => {
-                Some(RistrettoBoth {
-                    point,
-                    compressed,
-                })
-            }
+            Some(point) => Some(RistrettoBoth { point, compressed }),
         }
     }
 
@@ -93,7 +92,7 @@ impl RistrettoBoth {
         self.compressed.to_bytes()
     }
 
-     /// Convert this point to a byte array.
+    /// Convert this point to a byte array.
     #[inline]
     pub fn as_bytes<'a>(&'a self) -> &'a [u8; RISTRETTO_POINT_LENGTH] {
         self.compressed.as_bytes()
@@ -112,7 +111,7 @@ impl RistrettoBoth {
     /// ```
     /// # extern crate mohan;
     /// #
-    /// 
+    ///
     /// use mohan::tools::RistrettoBoth;
     ///
     /// # fn doctest() -> Option<RistrettoBoth> {
@@ -136,14 +135,14 @@ impl RistrettoBoth {
     /// is an `SignatureError` describing the error that occurred.
     #[inline]
     pub fn from_bytes(bytes: &[u8]) -> Option<RistrettoBoth> {
-        if bytes.len() != RISTRETTO_POINT_LENGTH { return None; }
+        if bytes.len() != RISTRETTO_POINT_LENGTH {
+            return None;
+        }
         let mut compressed = CompressedRistretto([0u8; RISTRETTO_POINT_LENGTH]);
         compressed.0.copy_from_slice(&bytes[..32]);
         RistrettoBoth::from_compressed(compressed)
     }
-    
 }
-
 
 /// We hide fields largely so that only compairing the compressed forms works.
 impl PartialEq<Self> for RistrettoBoth {
@@ -157,7 +156,6 @@ impl PartialEq<Self> for RistrettoBoth {
     //   self.compressed.0.ne(&other.compressed.0)
     // }
 }
-
 
 impl PartialOrd<RistrettoBoth> for RistrettoBoth {
     fn partial_cmp(&self, other: &RistrettoBoth) -> Option<::core::cmp::Ordering> {
@@ -198,22 +196,22 @@ impl ::core::hash::Hash for RistrettoBoth {
 }
 
 impl ser::Writeable for RistrettoBoth {
-	fn write<W: ser::Writer>(&self, writer: &mut W) -> Result<(), ser::Error> {
+    fn write<W: ser::Writer>(&self, writer: &mut W) -> Result<(), ser::Error> {
         self.compressed.write(writer)?;
         Ok(())
-	}
+    }
 }
 
 impl ser::Readable for RistrettoBoth {
-	fn read(reader: &mut dyn ser::Reader) -> Result<RistrettoBoth, ser::Error> {
+    fn read(reader: &mut dyn ser::Reader) -> Result<RistrettoBoth, ser::Error> {
         let raw = CompressedRistretto::read(reader)?;
-        
+
         match raw.decompress() {
             Some(kosher) => Ok(RistrettoBoth {
-                                compressed: raw,
-                                point: kosher
-                            }),
-            None => Err(ser::Error::CorruptedData)
+                compressed: raw,
+                point: kosher,
+            }),
+            None => Err(ser::Error::CorruptedData),
         }
-	}
+    }
 }

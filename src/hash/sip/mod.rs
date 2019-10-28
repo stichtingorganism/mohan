@@ -6,8 +6,6 @@
 // <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
 // option.
 
-
-
 mod sipper;
 pub use sipper::SipHasher24;
 

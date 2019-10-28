@@ -15,12 +15,10 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 //Original Authers of the tai64 crate ["Tony Arcieri <tony@iqlusion.io>", "sopium <sopium@mysterious.site>"]
 
-
-use std::{convert::TryFrom, ops, time::Duration};
 use failure::Fail;
-use std::time::{SystemTime, UNIX_EPOCH};
 use serde::{Deserialize, Serialize};
-
+use std::time::{SystemTime, UNIX_EPOCH};
+use std::{convert::TryFrom, ops, time::Duration};
 
 /// Unix epoch in TAI64: 1970-01-01 00:00:10 TAI.
 pub const UNIX_EPOCH_TAI64: TAI64 = TAI64(10 + (1 << 62));
@@ -38,7 +36,9 @@ const TAI64N_LEN: usize = 12;
 const NANOS_PER_SECOND: u32 = 1_000_000_000;
 
 /// A `TAI64` label.
-#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Serialize, Deserialize, Default)]
+#[derive(
+    Copy, Clone, Debug, Eq, Hash, PartialEq, PartialOrd, Ord, Serialize, Deserialize, Default,
+)]
 pub struct TAI64(pub u64);
 
 impl TAI64 {
@@ -179,7 +179,6 @@ impl TAI64N {
             Err(d) => UNIX_EPOCH - d,
         }
     }
-
 }
 
 impl From<TAI64> for TAI64N {
@@ -223,7 +222,6 @@ impl From<SystemTime> for TAI64N {
         TAI64N::from_system_time(&t)
     }
 }
-
 
 impl ops::Add<Duration> for TAI64N {
     type Output = TAI64N;
@@ -271,18 +269,17 @@ pub enum Error {
 //
 
 impl crate::ser::Readable for TAI64 {
-	fn read(reader: &mut dyn crate::ser::Reader) -> Result<TAI64, crate::ser::Error> {
-		let time = reader.read_u64()?;
-		Ok(TAI64(time))
-	}
+    fn read(reader: &mut dyn crate::ser::Reader) -> Result<TAI64, crate::ser::Error> {
+        let time = reader.read_u64()?;
+        Ok(TAI64(time))
+    }
 }
 
 impl crate::ser::Writeable for TAI64 {
-	fn write<W: crate::ser::Writer>(&self, writer: &mut W) -> Result<(), crate::ser::Error> {
-		writer.write_u64(self.0)
-	}
+    fn write<W: crate::ser::Writer>(&self, writer: &mut W) -> Result<(), crate::ser::Error> {
+        writer.write_u64(self.0)
+    }
 }
-
 
 #[cfg(test)]
 mod tests {
