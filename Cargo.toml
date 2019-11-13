@@ -1,6 +1,6 @@
 [package]
 name = "mohan"
-version = "0.0.48"
+version = "0.0.49"
 authors = ["hello@organism.org"]
 description = "Shared Types & Utils"
 license = "Apache-2.0"
@@ -18,6 +18,8 @@ curve25519-dalek-organism = { version = "0.0.*", features = ["serde", "alloc", "
 blake2b_simd = "0.5"
 rayon = "1.1"
 uint = "0.8.1"
+subtle = "2"
+
 
 [dependencies.rand]
 version = "0.7.2"

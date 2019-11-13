@@ -19,6 +19,9 @@ pub use sip::SipHasher24 as SipHasher;
 mod types;
 pub use types::{DefaultHashable, HashWriter, Hashed, H256};
 
+mod error;
+pub use error::Unspecified;
+
 use crate::blake2::{Params, State};
 use crate::dalek::ristretto::RistrettoPoint;
 
@@ -51,6 +54,39 @@ pub fn blake512(data: &[u8]) -> [u8; 64] {
     result.clone_from_slice(&params.hash(data).as_bytes());
     result
 }
+
+/// Blake2b Hash Function as HMAC
+#[inline]
+pub fn hmac_sign(key: &[u8], data: &[u8]) -> H256 {
+    let mut params = Params::new();
+    params.key(key);
+    params.hash_length(32);
+
+    let mut result = [0u8; 32];
+    result.clone_from_slice(&params.hash(data).as_bytes());
+    H256::from(result)
+}
+
+pub fn hmac_verify(key: &[u8], data: &[u8], tag: &[u8]) -> Result<(), Unspecified> {
+    use subtle::ConstantTimeEq;
+
+    let mut params = Params::new();
+    params.key(key);
+    params.hash_length(32);
+    let mut result = [0u8; 32];
+    result.clone_from_slice(&params.hash(data).as_bytes());
+
+    if tag.len() != result.len() {
+        return Err(Unspecified);
+    }
+
+    if tag.ct_eq(&result).unwrap_u8() == 1 {
+        Ok(())
+    } else {
+        return Err(Unspecified);
+    }
+}
+
 
 /// Mohan varient of hash to Point
 #[inline]

@@ -585,14 +585,14 @@ where
     }
 }
 
-impl Writeable for bytes::BytesMut {
-    fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
-        for elmt in self {
-            elmt.write(writer)?;
-        }
-        Ok(())
-    }
-}
+// impl Writeable for bytes::BytesMut {
+//     fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
+//         for elmt in self {
+//             elmt.write(writer)?;
+//         }
+//         Ok(())
+//     }
+// }
 
 impl<'a, A: Writeable> Writeable for &'a A {
     fn write<W: Writer>(&self, writer: &mut W) -> Result<(), Error> {
