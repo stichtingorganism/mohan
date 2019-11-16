@@ -9,7 +9,7 @@
 - Serilization
 - Hex conversion
 - Merkle Tree
-- Bech32
+- Base58Check
 - Golomb Coded Sets
 - Tai64 Time Spec
 - Random Bytes Interface

@@ -15,7 +15,7 @@
 //! TAI64(N) timestamp generation, parsing and calculation.
 //Original Authers of the tai64 crate ["Tony Arcieri <tony@iqlusion.io>", "sopium <sopium@mysterious.site>"]
 
-use failure::Fail;
+use thiserror::Error;
 use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::{convert::TryFrom, ops, time::Duration};
@@ -253,14 +253,14 @@ impl ops::Sub<Duration> for TAI64N {
 }
 
 /// TAI64 errors
-#[derive(Copy, Clone, Debug, Eq, Fail, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, Error, PartialEq)]
 pub enum Error {
     /// Invalid length
-    #[fail(display = "length invalid")]
+    #[error("length invalid")]
     LengthInvalid,
 
     /// Nanosecond part must be <= 999999999.
-    #[fail(display = "invalid number of nanoseconds")]
+    #[error("invalid number of nanoseconds")]
     NanosInvalid,
 }
 

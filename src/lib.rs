@@ -14,8 +14,8 @@
 
 /// Repub bytes
 pub use bytes;
-/// bech32
-pub mod bech32;
+/// base58
+pub mod base58;
 /// To & From Hex
 pub mod hex;
 /// Serilization

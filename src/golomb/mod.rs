@@ -19,7 +19,7 @@ mod bits;
 use bits::{BitStreamReader, BitStreamWriter};
 
 use crate::hash::SipHasher;
-use failure::Fail;
+use thiserror::Error;
 use std::collections::HashSet;
 use std::{cmp, io};
 
@@ -28,18 +28,18 @@ pub const P_BIP158: u8 = 19;
 pub const M_BIP158: u64 = 784931;
 
 /// Errors that may occur when handling Golomb Coded Sets.
-#[derive(Debug, Fail)]
+#[derive(Debug, Error)]
 pub enum Error {
     /// Returned when attempting to insert an additional element into an
     /// already full Golomb Coded Set.
-    #[fail(display = "Limit for the number of elements has been reached")]
+    #[error("Limit for the number of elements has been reached")]
     LimitReached,
     /// The Golomb-Rice encoded sequence of bits could not be decoded, returned
     /// when unpacking or calling the `contains` method on a a packed GCS.
-    #[fail(display = "Decoding failed due to invalid Golomb-Rice bit sequence")]
+    #[error("Decoding failed due to invalid Golomb-Rice bit sequence")]
     Decode,
     /// todo
-    #[fail(display = "IO error: {}", _0)]
+    #[error("IO error: `{0}`")]
     Io(io::Error),
 }
 

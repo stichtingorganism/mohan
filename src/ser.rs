@@ -21,7 +21,7 @@
 
 // use crate::hash::Hashed;
 use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
-use failure::Fail;
+use thiserror::Error;
 use serde::{Deserialize, Serialize};
 use std::fmt;
 use std::io::{self, Read, Write};
@@ -31,10 +31,10 @@ use std::marker;
 pub const PROTOCOL_VERSION: u32 = 1;
 
 /// Possible errors deriving from serializing or deserializing.
-#[derive(Clone, Eq, PartialEq, Debug, Serialize, Deserialize, Fail)]
+#[derive(Clone, Eq, PartialEq, Debug, Serialize, Deserialize, Error)]
 pub enum Error {
     /// Wraps an io error produced when reading or writing
-    #[fail(display = "IOerr: {:?} --- {:?}", _0, _1)]
+    #[error("IOerr: {:?} --- {:?}", .0, .1)]
     IOErr(
         String,
         #[serde(
@@ -44,7 +44,7 @@ pub enum Error {
         io::ErrorKind,
     ),
     /// Expected a given value that wasn't found
-    #[fail(display = "expected {:?}, got {:?}", expected, received)]
+    #[error("expected {expected:?}, got {received:?}")]
     UnexpectedData {
         /// What we wanted
         expected: Vec<u8>,
@@ -52,28 +52,28 @@ pub enum Error {
         received: Vec<u8>,
     },
     /// Data wasn't in a consumable format
-    #[fail(display = "corrupted data")]
+    #[error("corrupted data")]
     CorruptedData,
     /// Incorrect number of elements (when deserializing a vec via read_multi say).
-    #[fail(display = "count error")]
+    #[error("count error")]
     CountError,
     /// When asked to read too much data
-    #[fail(display = "too large read")]
+    #[error("too large read")]
     TooLargeReadErr,
     /// Error from from_hex deserialization
-    #[fail(display = "hex error {}", _0)]
+    #[error("hex error `{0}`")]
     HexError(String),
     /// Inputs/outputs/kernels must be sorted lexicographically.
-    #[fail(display = "sort order")]
+    #[error("sort order")]
     SortError,
     /// Inputs/outputs/kernels must be unique.
-    #[fail(display = "duplicate")]
+    #[error("duplicate")]
     DuplicateError,
     /// Block header version (hard-fork schedule).
-    #[fail(display = "invalid block version")]
+    #[error("invalid block version")]
     InvalidBlockVersion,
     /// Block header version (hard-fork schedule).
-    #[fail(display = "invalid variable integer encoding")]
+    #[error("invalid variable integer encoding")]
     InvalidVarInt,
 }
 
