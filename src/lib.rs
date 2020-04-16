@@ -43,12 +43,8 @@ mod fast_merkle_root;
 pub mod tools;
 pub use fast_merkle_root::fast_merkle_root;
 
-/// U256 compact representation
-mod compact;
-pub use compact::Compact;
 
-#[macro_use]
-extern crate uint;
+#[macro_use] extern crate uint;
 
 construct_uint! {
     pub struct U256(4);
