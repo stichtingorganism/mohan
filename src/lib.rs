@@ -31,10 +31,8 @@ pub mod sponge;
 /// Variable Encoding Integer
 mod varint;
 pub use varint::VarInt;
-/// Golomb for block filters
-pub mod golomb;
 /// Export Curve
-pub use curve25519_dalek_organism as dalek;
+pub use curve25519_dalek as dalek;
 /// Various Hash functions & types
 pub mod hash;
 /// Export blake2b
