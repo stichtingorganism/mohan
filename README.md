@@ -10,7 +10,6 @@
 - Hex conversion
 - Merkle Tree
 - Base58Check
-- Golomb Coded Sets
 - Tai64 Time Spec
 - Random Bytes Interface
 - Variable Length Integer
