@@ -1,4 +1,4 @@
-// Copyright 2019 Stichting Organism
+// Copyright 2021 Stichting Organism
 // Copyright 2018 The Grin Developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,18 +23,18 @@ use std::convert::AsRef;
 use std::ops::Add;
 use std::{fmt, ops};
 
-/// A hash to uniquely (or close enough) identify one of the main blockchain
-/// constructs. Used pervasively for blocks, transactions and outputs.
-#[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Hash, Serialize, Deserialize)]
-pub struct H256(pub(crate) [u8; 32]);
+
+fixed_hash::construct_fixed_hash! {
+    /// My 256 bit hash type.
+    #[derive(Serialize, Deserialize)]
+    pub struct H256(32);
+}
+
 
 impl DefaultHashable for H256 {}
 
 impl H256 {
-    pub fn zero() -> H256 {
-        H256([0; 32])
-    }
-
+  
     pub fn hash_with<T: Writeable>(&self, other: T) -> H256 {
         let mut hasher = HashWriter::default();
         ser::Writeable::write(self, &mut hasher).unwrap();
@@ -56,16 +56,6 @@ impl H256 {
     /// Converts the hash to a byte vector
     pub fn to_vec(&self) -> Vec<u8> {
         self.0.to_vec()
-    }
-
-    /// Returns a byte slice of the hash contents.
-    pub fn as_bytes(&self) -> &[u8] {
-        &self.0
-    }
-
-    /// Returns a byte slice of the hash contents.
-    pub fn to_bytes(&self) -> [u8; 32] {
-        self.0
     }
 
     /// Convert a hash to hex string format.
@@ -96,77 +86,12 @@ impl H256 {
     }
 }
 
-impl From<[u8; 32]> for H256 {
-    fn from(data: [u8; 32]) -> Self {
-        H256(data)
-    }
-}
-
-impl fmt::Debug for H256 {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let hash_hex = self.to_hex();
-        const NUM_SHOW: usize = 12;
-
-        write!(f, "{}", &hash_hex[..NUM_SHOW])
-    }
-}
-
-impl fmt::Display for H256 {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Debug::fmt(self, f)
-    }
-}
 
 impl FixedLength for H256 {
     /// Size of a hash in bytes.
     const LEN: usize = 32;
 }
 
-impl ops::Index<usize> for H256 {
-    type Output = u8;
-
-    fn index(&self, idx: usize) -> &u8 {
-        &self.0[idx]
-    }
-}
-
-impl ops::Index<ops::Range<usize>> for H256 {
-    type Output = [u8];
-
-    fn index(&self, idx: ops::Range<usize>) -> &[u8] {
-        &self.0[idx]
-    }
-}
-
-impl ops::Index<ops::RangeTo<usize>> for H256 {
-    type Output = [u8];
-
-    fn index(&self, idx: ops::RangeTo<usize>) -> &[u8] {
-        &self.0[idx]
-    }
-}
-
-impl ops::Index<ops::RangeFrom<usize>> for H256 {
-    type Output = [u8];
-
-    fn index(&self, idx: ops::RangeFrom<usize>) -> &[u8] {
-        &self.0[idx]
-    }
-}
-
-impl ops::Index<ops::RangeFull> for H256 {
-    type Output = [u8];
-
-    fn index(&self, idx: ops::RangeFull) -> &[u8] {
-        &self.0[idx]
-    }
-}
-
-impl AsRef<[u8]> for H256 {
-    fn as_ref(&self) -> &[u8] {
-        &self.0
-    }
-}
 
 /// A trait for types that have a canonical hash
 pub trait Hashed {
@@ -196,11 +121,6 @@ impl Add for H256 {
     }
 }
 
-impl Default for H256 {
-    fn default() -> H256 {
-        H256::zero()
-    }
-}
 
 /// Serializer that outputs a hash of the serialized object
 pub struct HashWriter {
@@ -264,14 +184,6 @@ impl<D: DefaultHashable> Hashed for D {
 impl DefaultHashable for Vec<u8> {}
 impl DefaultHashable for u64 {}
 
-impl std::str::FromStr for H256 {
-    type Err = ser::Error;
-
-    /// Creates a hash type instance from the given string.
-    fn from_str(input: &str) -> Result<H256, ser::Error> {
-        Self::from_hex(input)
-    }
-}
 
 #[cfg(test)]
 mod tests {

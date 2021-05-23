@@ -1,4 +1,4 @@
-// Copyright 2019 Stichting Organism
+// Copyright 2021 Stichting Organism
 // Copyright 2018 The Grin Developers
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

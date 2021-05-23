@@ -1,4 +1,4 @@
-// Copyright 2019 Stichting Organism
+// Copyright 2021 Stichting Organism
 // Copyright (c) 2016 James Lucas
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ pub fn fisher_yates<T>(arr: &mut [T]) {
 
     for i in 0..n {
         // Swap i with a random point after it
-        let j = rng.gen_range(0, n - i);
+        let j = rng.gen_range(0..n - i);
         arr.swap(i, i + j);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 Stichting Organism
+// Copyright 2021 Stichting Organism
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/// Repub bytes
-pub use bytes;
+
 /// base58
 pub mod base58;
 /// To & From Hex
 pub mod hex;
 /// Serilization
 pub mod ser;
-/// Parking Lot backed Sync Primitives
-pub mod sync;
 /// 64bit Time handling
 pub mod tai64;
 /// Repub Byteorder
 pub use byteorder;
-/// Keccak-f sponge function
-pub mod sponge;
 /// Variable Encoding Integer
 mod varint;
 pub use varint::VarInt;
@@ -44,11 +39,12 @@ pub mod tools;
 pub use fast_merkle_root::fast_merkle_root;
 
 
-#[macro_use] extern crate uint;
 
-construct_uint! {
+uint::construct_uint! {
     pub struct U256(4);
 }
+
+
 
 mod fisher_yates;
 pub use fisher_yates::fisher_yates;
@@ -57,15 +53,6 @@ pub use fisher_yates::fisher_yates;
 // - Jeffrey Burdges <jeff@web3.foundation>
 //
 
-/// A hack function to use zeroize
-#[inline(always)]
-pub fn zeroize_hack<Z: Default>(z: &mut Z) {
-    use core::{ptr, sync::atomic};
-    unsafe {
-        ptr::write_volatile(z, Z::default());
-    }
-    atomic::compiler_fence(atomic::Ordering::SeqCst);
-}
 
 #[cfg(all(feature = "rand_os", feature = "rand"))]
 pub fn mohan_rand() -> impl rand::RngCore + rand::CryptoRng {

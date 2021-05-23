@@ -1,4 +1,4 @@
-// Copyright 2019 Stichting Organism
+// Copyright 2021 Stichting Organism
 // Jeff Burdges <jeff@web3.foundation>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,12 +34,12 @@ pub struct RistrettoBoth {
     point: RistrettoPoint,
 }
 
-impl ::zeroize::Zeroize for RistrettoBoth {
-    fn zeroize(&mut self) {
-        crate::zeroize_hack(&mut self.compressed);
-        crate::zeroize_hack(&mut self.point);
-    }
-}
+// impl ::zeroize::Zeroize for RistrettoBoth {
+//     fn zeroize(&mut self) {
+//         self.compressed.zeroize();
+//         self.point.zeroize();
+//     }
+// }
 
 impl Debug for RistrettoBoth {
     fn fmt(&self, f: &mut ::core::fmt::Formatter<'_>) -> ::core::fmt::Result {
